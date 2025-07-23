@@ -1,0 +1,19 @@
+plugins {
+    id 'org.springframework.boot' version '3.5.3'
+}
+
+apply from: "${rootDir}/common/build.gradle"
+
+dependencies {
+    implementation project(":common-module")
+
+    // spring webflux
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+}
+
+bootJar {
+    launchScript()
+    archiveFileName = "transfer.jar"
+}
