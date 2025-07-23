@@ -1,0 +1,19 @@
+
+spring:
+  config:
+    import: "consul:"
+  application:
+    name: blocker
+  cloud:
+    consul:
+      host: consul
+      port: 8500
+      discovery:
+        service-name: blocker
+      config:
+        enabled: true
+        prefixes:
+          - config/common
+          - config/blocker
+        default-context: 'application'
+        data-key: ''
