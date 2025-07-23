@@ -1,0 +1,217 @@
+services:
+
+  bankapp-keycloak:
+    image: keycloak/keycloak:latest
+    container_name: bankapp-keycloak
+    command: start-dev --import-realm --http-port=8089 --log="file,console"
+    ports:
+      - "8089:8089"
+      - "9000:9000"
+    healthcheck:
+      test: >
+        sh -c '
+          if grep -q "Listening on" /opt/keycloak/data/log/keycloak.log; then
+            sleep 10;
+            exit 0;
+          else
+            exit 1;
+          fi
+        '
+      interval: 2s
+      timeout: 11s
+      start_period: 10s
+      retries: 20
+
+    environment:
+      KC_HEALTH_ENABLED: "true"
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import
+    networks:
+      - app-net
+
+  consul:
+    image: hashicorp/consul:1.15
+    container_name: consul
+    ports:
+      - "8500:8500"
+    command: >
+      sh -c "
+      exec consul agent -dev -ui -client=0.0.0.0 -bind=0.0.0.0 -config-dir=/consul/config -data-dir=/consul/data
+      "
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8500/v1/status/leader" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      app-net: { }
+
+  kv-import:
+    image: consul:1.15
+    depends_on:
+      consul:
+        condition: service_healthy
+    volumes:
+      - ./import-all.sh:/import-all.sh
+      - ./configs:/configs
+    entrypoint: [ "/bin/sh", "/import-all.sh" ]
+    networks:
+      - app-net
+
+  accounts-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: prod
+    networks:
+      - app-net
+
+  exchange-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: prod
+    networks:
+      - app-net
+
+  account-module:
+    build: ./accounts-module/
+    depends_on:
+      accounts-db:
+        condition: service_started
+      kv-import:
+        condition: service_completed_successfully
+      gateway-module:
+        condition: service_started
+      bankapp-keycloak:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    networks:
+      - app-net
+
+  blocker-module:
+    build: ./blocker-module/
+    depends_on:
+      gateway-module:
+        condition: service_started
+      bankapp-keycloak:
+        condition: service_healthy
+      kv-import:
+        condition: service_completed_successfully
+    ports:
+      - "8081:8081"
+      - "5006:5006"
+    networks:
+      - app-net
+
+  cash-module:
+    build: ./cash-module/
+    depends_on:
+      gateway-module:
+        condition: service_started
+      bankapp-keycloak:
+        condition: service_healthy
+      kv-import:
+        condition: service_completed_successfully
+    ports:
+      - "8082:8082"
+      - "5007:5007"
+    networks:
+      - app-net
+
+  exchange-generator-module:
+    build: ./exchange-generator-module/
+    depends_on:
+      gateway-module:
+        condition: service_started
+      bankapp-keycloak:
+        condition: service_healthy
+      kv-import:
+        condition: service_completed_successfully
+    ports:
+      - "8083:8083"
+      - "5008:5008"
+    networks:
+      - app-net
+
+  exchange-module:
+    build: ./exchange-module/
+    depends_on:
+      exchange-db:
+        condition: service_started
+      kv-import:
+        condition: service_completed_successfully
+      gateway-module:
+        condition: service_started
+      bankapp-keycloak:
+        condition: service_healthy
+    ports:
+      - "8084:8084"
+      - "5009:5009"
+    networks:
+      - app-net
+
+  gateway-module:
+    build: ./gateway-module/
+    depends_on:
+      kv-import:
+        condition: service_completed_successfully
+      bankapp-keycloak:
+        condition: service_healthy
+    ports:
+      - "8085:8085"
+      - "5010:5010"
+    networks:
+      - app-net
+
+  notification-module:
+    build: ./notifications-module
+    depends_on:
+      bankapp-keycloak:
+        condition: service_healthy
+      kv-import:
+        condition: service_completed_successfully
+    ports:
+      - "8086:8086"
+      - "5011:5011"
+    networks:
+      - app-net
+
+  transfer-module:
+    build: ./transfer-module
+    depends_on:
+      gateway-module:
+        condition: service_started
+      bankapp-keycloak:
+        condition: service_healthy
+      kv-import:
+        condition: service_completed_successfully
+    ports:
+      - "8087:8087"
+      - "5012:5012"
+    networks:
+      - app-net
+
+  ui-module:
+    build: ./ui-module/
+    depends_on:
+      kv-import:
+        condition: service_completed_successfully
+      gateway-module:
+        condition: service_started
+      bankapp-keycloak:
+        condition: service_healthy
+    ports:
+      - "8088:8088"
+      - "5013:5013"
+    networks:
+      - app-net
+
+networks:
+  app-net:
