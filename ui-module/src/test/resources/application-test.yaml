@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    consul:
+      enabled: false
+      config:
+        enabled: false
+  web:
+    resources:
+      add-mappings: false
+gateway:
+  url: 'stub'
+  accountServiceURL: 'stub'
+  cashServiceURL: 'stub'
+  transferServiceURL: 'stub'
+stubrunner:
+  ids: ru.practicum:accounts-module-stubs:0.0.1:stubs:8080
+  stubs-mode: local

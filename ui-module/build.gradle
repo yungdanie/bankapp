@@ -1,0 +1,35 @@
+plugins {
+	id 'org.springframework.boot' version '3.5.3'
+}
+
+apply from: "${rootDir}/common/build.gradle"
+
+dependencies {
+	// spring webflux
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	implementation "io.github.resilience4j:resilience4j-spring-boot3"
+	implementation "io.github.resilience4j:resilience4j-reactor"
+	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
+
+	//frontend
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+	implementation project(":common-module")
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+tasks.withType(Test).configureEach {
+	dependsOn project(":accounts-module").tasks.getByName("build")
+}
+
+
+bootJar {
+	launchScript()
+	archiveFileName = "bankui.jar"
+}
