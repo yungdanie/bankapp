@@ -1,0 +1,15 @@
+plugins {
+    id 'org.springframework.boot' version '3.5.3'
+}
+
+apply from: "${rootDir}/common/build.gradle"
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation project(":common-module")
+}
+
+bootJar {
+    launchScript()
+    archiveFileName = "notifications.jar"
+}
