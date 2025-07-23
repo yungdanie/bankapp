@@ -1,0 +1,69 @@
+plugins {
+    id 'org.springframework.boot' version '3.5.3'
+    id 'org.springframework.cloud.contract' version '4.1.2'
+}
+
+ext {
+    contractsDir = file("mappings")
+    stubsOutputDirRoot = file("${project.buildDir}/production/${project.name}-stubs/")
+}
+
+apply from: "${rootDir}/common/build.gradle"
+apply plugin: 'maven-publish'
+
+dependencies {
+    // jpa
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation "org.hibernate:hibernate-core:${hibernateVersion}"
+
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-contract-verifier'
+
+    // web mvc
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    testImplementation 'com.h2database:h2'
+
+    implementation project(":common-module")
+}
+
+contracts {
+    testFramework = "JUNIT5"
+
+    baseClassForTests = "ru.practicum.accounts.BaseContract"
+    packageWithBaseClasses = "ru.practicum.accounts"
+}
+
+repositories {
+    mavenLocal()
+}
+
+tasks.withType(Test).configureEach {
+    jvmArgs += [
+            "--add-opens=java.base/java.lang=ALL-UNNAMED",
+            "--add-opens=java.base/java.util=ALL-UNNAMED"
+    ]
+}
+
+publishing {
+    publications {
+        stubs(MavenPublication) {
+            artifactId "${project.name}"
+            artifact verifierStubsJar
+        }
+    }
+}
+
+afterEvaluate {
+    tasks.named('build') {
+        dependsOn 'publishStubsPublicationToMavenLocal'
+    }
+}
+
+bootJar {
+    launchScript()
+    archiveFileName = "accounts.jar"
+}
