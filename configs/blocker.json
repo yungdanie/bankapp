@@ -1,0 +1,12 @@
+[
+  {
+    "key": "config/blocker/application/spring.security.oauth2.resourceserver.jwt.issuer-uri",
+    "value": "aHR0cDovL2JhbmthcHAta2V5Y2xvYWs6ODA4OS9yZWFsbXMvYmFua2FwcA==",
+    "flags": 0
+  },
+  {
+    "key": "config/blocker/application/spring.security.oauth2.resourceserver.jwt.jwk-set-uri",
+    "value": "aHR0cDovL2JhbmthcHAta2V5Y2xvYWs6ODA4OS9yZWFsbXMvYmFua2FwcC9wcm90b2NvbC9vcGVuaWQtY29ubmVjdC9jZXJ0cw==",
+    "flags": 0
+  }
+]

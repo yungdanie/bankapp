@@ -1,0 +1,27 @@
+[
+  {
+    "key": "config/bankui/application/spring.security.oauth2.client.registration.bankui-service.authorization-grant-type",
+    "value": "Y2xpZW50X2NyZWRlbnRpYWxz",
+    "flags": 0
+  },
+  {
+    "key": "config/bankui/application/spring.security.oauth2.client.registration.bankui-service.provider",
+    "value": "a2V5Y2xvYWs=",
+    "flags": 0
+  },
+  {
+    "key": "config/bankui/application/spring.security.oauth2.client.registration.bankui-service.client-id",
+    "value": "YmFua3VpLXNlcnZpY2U=",
+    "flags": 0
+  },
+  {
+    "key": "config/bankui/application/spring.security.oauth2.client.registration.bankui-service.client-secret",
+    "value": "c2VjcmV0",
+    "flags": 0
+  },
+  {
+    "key": "config/bankui/application/spring.security.oauth2.client.provider.keycloak.issuer-uri",
+    "value": "aHR0cDovL2JhbmthcHAta2V5Y2xvYWs6ODA4OS9yZWFsbXMvYmFua2FwcA==",
+    "flags": 0
+  }
+]

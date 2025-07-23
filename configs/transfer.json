@@ -1,0 +1,37 @@
+[
+  {
+    "key": "config/transfer/application/spring.security.oauth2.resourceserver.jwt.issuer-uri",
+    "value": "aHR0cDovL2JhbmthcHAta2V5Y2xvYWs6ODA4OS9yZWFsbXMvYmFua2FwcA==",
+    "flags": 0
+  },
+  {
+    "key": "config/transfer/application/spring.security.oauth2.resourceserver.jwt.jwk-set-uri",
+    "value": "aHR0cDovL2JhbmthcHAta2V5Y2xvYWs6ODA4OS9yZWFsbXMvYmFua2FwcC9wcm90b2NvbC9vcGVuaWQtY29ubmVjdC9jZXJ0cw==",
+    "flags": 0
+  },
+  {
+    "key": "config/transfer/application/spring.security.oauth2.client.registration.transfer-service.authorization-grant-type",
+    "value": "Y2xpZW50X2NyZWRlbnRpYWxz",
+    "flags": 0
+  },
+  {
+    "key": "config/transfer/application/spring.security.oauth2.client.registration.transfer-service.provider",
+    "value": "a2V5Y2xvYWs=",
+    "flags": 0
+  },
+  {
+    "key": "config/transfer/application/spring.security.oauth2.client.registration.transfer-service.client-id",
+    "value": "dHJhbnNmZXItc2VydmljZQ==",
+    "flags": 0
+  },
+  {
+    "key": "config/transfer/application/spring.security.oauth2.client.registration.transfer-service.client-secret",
+    "value": "c2VjcmV0",
+    "flags": 0
+  },
+  {
+    "key": "config/transfer/application/spring.security.oauth2.client.provider.keycloak.issuer-uri",
+    "value": "aHR0cDovL2JhbmthcHAta2V5Y2xvYWs6ODA4OS9yZWFsbXMvYmFua2FwcA==",
+    "flags": 0
+  }
+]

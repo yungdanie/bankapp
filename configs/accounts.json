@@ -1,0 +1,67 @@
+[
+  {
+    "key": "config/accounts/application/spring.security.oauth2.resourceserver.jwt.issuer-uri",
+    "value": "aHR0cDovL2JhbmthcHAta2V5Y2xvYWs6ODA4OS9yZWFsbXMvYmFua2FwcA==",
+    "flags": 0
+  },
+  {
+    "key": "config/accounts/application/spring.security.oauth2.resourceserver.jwt.jwk-set-uri",
+    "value": "aHR0cDovL2JhbmthcHAta2V5Y2xvYWs6ODA4OS9yZWFsbXMvYmFua2FwcC9wcm90b2NvbC9vcGVuaWQtY29ubmVjdC9jZXJ0cw==",
+    "flags": 0
+  },
+  {
+    "key": "config/accounts/application/spring.security.oauth2.client.registration.accounts-service.authorization-grant-type",
+    "value": "Y2xpZW50X2NyZWRlbnRpYWxz",
+    "flags": 0
+  },
+  {
+    "key": "config/accounts/application/spring.security.oauth2.client.registration.accounts-service.provider",
+    "value": "a2V5Y2xvYWs=",
+    "flags": 0
+  },
+  {
+    "key": "config/accounts/application/spring.security.oauth2.client.registration.accounts-service.client-id",
+    "value": "YWNjb3VudHMtc2VydmljZQ==",
+    "flags": 0
+  },
+  {
+    "key": "config/accounts/application/spring.security.oauth2.client.registration.accounts-service.client-secret",
+    "value": "c2VjcmV0",
+    "flags": 0
+  },
+  {
+    "key": "config/accounts/application/spring.security.oauth2.client.provider.keycloak.issuer-uri",
+    "value": "aHR0cDovL2JhbmthcHAta2V5Y2xvYWs6ODA4OS9yZWFsbXMvYmFua2FwcA==",
+    "flags": 0
+  },
+  {
+    "key": "config/accounts/application/spring.datasource.url",
+    "value": "amRiYzpwb3N0Z3Jlc3FsOi8vYWNjb3VudHMtZGIvcHJvZA==",
+    "flags": 0
+  },
+  {
+    "key": "config/accounts/application/spring.datasource.username",
+    "value": "dXNlcm5hbWU=",
+    "flags": 0
+  },
+  {
+    "key": "config/accounts/application/spring.datasource.password",
+    "value": "cGFzc3dvcmQ=",
+    "flags": 0
+  },
+  {
+    "key": "config/accounts/application/spring.datasource.driver-class-name",
+    "value": "b3JnLnBvc3RncmVzcWwuRHJpdmVy",
+    "flags": 0
+  },
+  {
+    "key": "config/accounts/application/spring.jpa.hibernate.ddl-auto",
+    "value": "dXBkYXRl",
+    "flags": 0
+  },
+  {
+    "key": "config/accounts/application/spring.jpa.properties.hibernate.dialect",
+    "value": "b3JnLmhpYmVybmF0ZS5kaWFsZWN0LlBvc3RncmVTUUxEaWFsZWN0",
+    "flags": 0
+  }
+]

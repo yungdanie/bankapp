@@ -1,0 +1,11 @@
+{
+  "gateway": {
+    "url": "http://gateway-module:8085",
+    "notificationServiceURL": "/notifications/api",
+    "accountServiceURL": "/accounts/api",
+    "blockerServiceURL": "/blocker/api",
+    "cashServiceURI": "/cash/api",
+    "transferServiceURL": "/transfer/api",
+    "exchangeServiceURL": "/exchange/api"
+  }
+}

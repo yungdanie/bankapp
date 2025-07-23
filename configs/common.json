@@ -1,0 +1,67 @@
+[
+  {
+    "key": "config/common/application/gateway.url",
+    "value": "aHR0cDovL2dhdGV3YXktbW9kdWxlOjgwODU=",
+    "flags": 0
+  },
+  {
+    "key": "config/common/application/gateway.notificationServiceURL",
+    "value": "L25vdGlmaWNhdGlvbnMvYXBp",
+    "flags": 0
+  },
+  {
+    "key": "config/common/application/gateway.accountServiceURL",
+    "value": "L2FjY291bnRzL2FwaQ==",
+    "flags": 0
+  },
+  {
+    "key": "config/common/application/gateway.blockerServiceURL",
+    "value": "L2Jsb2NrZXIvYXBp",
+    "flags": 0
+  },
+  {
+    "key": "config/common/application/gateway.cashServiceURL",
+    "value": "L2Nhc2gvYXBp",
+    "flags": 0
+  },
+  {
+    "key": "config/common/application/gateway.transferServiceURL",
+    "value": "L3RyYW5zZmVyL2FwaQ==",
+    "flags": 0
+  },
+  {
+    "key": "config/common/application/jwt.secret",
+    "value": "YUJjRGVGZ0hpSmtMbU5vUHFSc1R1VndYeVowMTIzNDU2Nzg5K2FiPQ==",
+    "flags": 0
+  },
+  {
+    "key": "config/common/application/jwt.expiration",
+    "value": "NjBt",
+    "flags": 0
+  },
+  {
+    "key": "config/common/application/gateway.exchangeServiceURL",
+    "value": "L2V4Y2hhbmdlL2FwaQ==",
+    "flags": 0
+  },
+  {
+    "key": "config/common/application/management.endpoints.web.exposure.include",
+    "value": "Kg==",
+    "flags": 0
+  },
+  {
+    "key": "config/common/application/management.endpoint.health.show-details",
+    "value": "YWx3YXlz",
+    "flags": 0
+  },
+  {
+    "key": "config/common/application/management.health.circuitbreakers.enabled",
+    "value": "dHJ1ZQ==",
+    "flags": 0
+  },
+  {
+    "key": "config/common/application/management.health.ratelimiters.enabled",
+    "value": "dHJ1ZQ==",
+    "flags": 0
+  }
+]
