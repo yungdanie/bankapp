@@ -1,0 +1,17 @@
+plugins {
+    id 'org.springframework.boot' version '3.5.3'
+}
+
+apply from: "${rootDir}/common/build.gradle"
+
+dependencies {
+    // spring webflux
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    implementation project(":common-module")
+}
+
+bootJar {
+    launchScript()
+    archiveFileName = "cash.jar"
+}
