@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: exchange-generator
+  config:
+    import: "consul:"
+  cloud:
+    consul:
+      retry:
+        enabled: true
+        max-attempts: 10
+        max-interval: 5000
+      host: consul
+      port: 8500
+      discovery:
+        service-name: exchange-generator-service
+      config:
+        enabled: true
+        prefixes:
+          - config/common
+          - config/exchange-generator
+        default-context: 'application'
+        data-key: ''
