@@ -1,20 +1,3 @@
 spring:
-  config:
-    import: "optional:consul:"
-
   application:
     name: accounts
-
-  cloud:
-    consul:
-      host: consul
-      port: 8500
-      discovery:
-        service-name: accounts-service
-      config:
-        enabled: true
-        prefixes:
-          - config/common
-          - config/accounts
-        default-context: 'application'
-        data-key: ''

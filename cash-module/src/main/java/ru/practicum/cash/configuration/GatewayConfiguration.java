@@ -1,10 +1,9 @@
 package ru.practicum.cash.configuration;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientManager;
 import org.springframework.web.reactive.function.client.ClientRequest;
@@ -21,27 +20,24 @@ public class GatewayConfiguration {
     private final String blockerServiceURL;
 
     public GatewayConfiguration(
-            @Value("${gateway.url}") String url,
             @Value("${gateway.accountServiceURL}") String accountsServiceURL,
             @Value("${gateway.blockerServiceURL}") String blockerServiceURL
     ) {
-        this.accountsServiceURL = url.concat(accountsServiceURL);
-        this.blockerServiceURL = url.concat(blockerServiceURL);
+        this.accountsServiceURL = accountsServiceURL;
+        this.blockerServiceURL = blockerServiceURL;
     }
 
     @Bean
-    @LoadBalanced
     public WebClient accountsAPI(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager) {
         return getWebClient(reactiveOAuth2AuthorizedClientManager, accountsServiceURL);
     }
 
     @Bean
-    @LoadBalanced
     public WebClient blockerAPI(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager) {
         return getWebClient(reactiveOAuth2AuthorizedClientManager, blockerServiceURL);
     }
 
-    @NotNull
+    @NonNull
     private WebClient getWebClient(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager, String serviceURL) {
         ExchangeFilterFunction errorHandler = ExchangeFilterFunction.ofResponseProcessor(
                 response -> {

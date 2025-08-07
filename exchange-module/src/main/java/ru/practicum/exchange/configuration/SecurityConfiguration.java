@@ -19,13 +19,13 @@ public class SecurityConfiguration {
                 http.csrf(AbstractHttpConfigurer::disable)
                         .cors(cors -> cors.configurationSource(request -> {
                             CorsConfiguration config = new CorsConfiguration();
-                            config.addAllowedOrigin("http://localhost:8088"); // Ваш фронтенд
+                            config.addAllowedOrigin("http://localhost:8088");
                             config.addAllowedMethod("*");
                             config.addAllowedHeader("*");
                             return config;
                         }))
                         .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/api/exchange/rates").permitAll()
+                                .requestMatchers("/api/exchange/rates", "/actuator/**").permitAll()
                                 .anyRequest().authenticated())
                         .formLogin(AbstractHttpConfigurer::disable)
                         .logout(AbstractHttpConfigurer::disable)

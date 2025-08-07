@@ -1,7 +1,6 @@
 package ru.practicum.exchangegenerator.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
@@ -17,11 +16,10 @@ public class GatewayConfiguration {
     private final OAuth2AuthorizedClientManager clientManager;
 
     public GatewayConfiguration(
-            @Value("${gateway.url}") String url,
             @Value("${gateway.exchangeServiceURL}") String exchangeServiceURL,
             OAuth2AuthorizedClientManager clientManager
     ) {
-        this.exchangeServiceURL = url.concat(exchangeServiceURL);
+        this.exchangeServiceURL = exchangeServiceURL;
         this.clientManager = clientManager;
     }
 
@@ -41,7 +39,6 @@ public class GatewayConfiguration {
     }
 
     @Bean
-    @LoadBalanced
     public RestClient exchangeAPI() {
         return RestClient.builder()
                 .requestInterceptor((request, body, execution) -> {

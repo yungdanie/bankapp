@@ -20,7 +20,9 @@ public class ApplicationReadyListener implements ApplicationListener<Application
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        var user = userRepository.save(new User("admin", "admin", "admin", LocalDate.now()));
-        accountService.onNewUser(user);
+        if (userRepository.findByLogin("admin") == null) {
+            var user = userRepository.save(new User("admin", "admin", "admin", LocalDate.now()));
+            accountService.onNewUser(user);
+        }
     }
 }

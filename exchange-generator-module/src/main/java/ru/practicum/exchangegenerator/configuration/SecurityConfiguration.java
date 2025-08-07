@@ -2,7 +2,6 @@ package ru.practicum.exchangegenerator.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.client.*;
@@ -17,7 +16,10 @@ public class SecurityConfiguration {
         return
                 http.csrf(AbstractHttpConfigurer::disable)
                         .cors(AbstractHttpConfigurer::disable)
-                        .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                        .authorizeHttpRequests(auth -> auth
+                                .requestMatchers("/actuator/**").permitAll()
+                                .anyRequest().authenticated()
+                        )
                         .formLogin(AbstractHttpConfigurer::disable)
                         .logout(AbstractHttpConfigurer::disable)
                         .build();

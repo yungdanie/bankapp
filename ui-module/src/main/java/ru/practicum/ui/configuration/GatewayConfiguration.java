@@ -1,8 +1,6 @@
 package ru.practicum.ui.configuration;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
@@ -23,17 +21,15 @@ public class GatewayConfiguration {
     private final String transferServiceURL;
 
     public GatewayConfiguration(
-            @Value("${gateway.url}") String url,
             @Value("${gateway.accountServiceURL}") String accountsServiceURL,
             @Value("${gateway.cashServiceURL}") String cashServiceURL,
             @Value("${gateway.transferServiceURL}") String transferServiceURL
     ) {
-        this.accountsServiceURL = url.concat(accountsServiceURL);
-        this.cashServiceURL = url.concat(cashServiceURL);
-        this.transferServiceURL = url.concat(transferServiceURL);
+        this.accountsServiceURL = accountsServiceURL;
+        this.cashServiceURL = cashServiceURL;
+        this.transferServiceURL = transferServiceURL;
     }
 
-    @NotNull
     private WebClient getWebClient(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager, String serviceURL) {
         ExchangeFilterFunction errorHandler = ExchangeFilterFunction.ofResponseProcessor(
                 response -> {
@@ -67,19 +63,16 @@ public class GatewayConfiguration {
     }
 
     @Bean
-    @LoadBalanced
     public WebClient accountsAPI(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager) {
         return getWebClient(reactiveOAuth2AuthorizedClientManager, accountsServiceURL);
     }
 
     @Bean
-    @LoadBalanced
     public WebClient cashAPI(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager) {
         return getWebClient(reactiveOAuth2AuthorizedClientManager, cashServiceURL);
     }
 
     @Bean
-    @LoadBalanced
     public WebClient transferAPI(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager) {
         return getWebClient(reactiveOAuth2AuthorizedClientManager, transferServiceURL);
     }

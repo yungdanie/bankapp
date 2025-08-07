@@ -1,8 +1,6 @@
 package ru.practicum.transfer.configuration;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
@@ -23,17 +21,15 @@ public class GatewayConfiguration {
     private final String blockerServiceURL;
 
     public GatewayConfiguration(
-            @Value("${gateway.url}") String url,
             @Value("${gateway.accountServiceURL}") String accountsServiceURL,
             @Value("${gateway.exchangeServiceURL}") String exchangeServiceURL,
             @Value("${gateway.blockerServiceURL}") String blockerServiceURL
     ) {
-        this.accountsServiceURL = url.concat(accountsServiceURL);
-        this.blockerServiceURL = url.concat(blockerServiceURL);
-        this.exchangeServiceURL = url.concat(exchangeServiceURL);
+        this.accountsServiceURL = accountsServiceURL;
+        this.blockerServiceURL = blockerServiceURL;
+        this.exchangeServiceURL = exchangeServiceURL;
     }
 
-    @NotNull
     private WebClient getWebClient(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager, String serviceURL) {
         ExchangeFilterFunction errorHandler = ExchangeFilterFunction.ofResponseProcessor(
                 response -> {
@@ -67,19 +63,16 @@ public class GatewayConfiguration {
     }
 
     @Bean
-    @LoadBalanced
     public WebClient accountsAPI(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager) {
         return getWebClient(reactiveOAuth2AuthorizedClientManager, accountsServiceURL);
     }
 
     @Bean
-    @LoadBalanced
     public WebClient blockerAPI(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager) {
         return getWebClient(reactiveOAuth2AuthorizedClientManager, blockerServiceURL);
     }
 
     @Bean
-    @LoadBalanced
     public WebClient exchangeAPI(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager) {
         return getWebClient(reactiveOAuth2AuthorizedClientManager, exchangeServiceURL);
     }
