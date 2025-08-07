@@ -8,13 +8,14 @@ pipeline {
     environment {
         DOCKER_REGISTRY = credentials('DOCKER_REGISTRY')
         GITHUB_USERNAME = credentials('GITHUB_USERNAME')
+        GITHUB_REPOSITORY = "yungdanie/bankapp"
         IMAGE_TAG       = "latest"
     }
 
     stages {
         stage('Build') {
             steps {
-                sh '../gradlew build'
+                sh './gradlew build'
             }
         }
 
