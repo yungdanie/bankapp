@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "accounts-service.fullname" . }}
+data:
+  spring_datasource_url: {{ .Values.config.database_url | quote }}
+  spring_datasource_username: {{ .Values.config.database_username | quote }}
+  spring_datasource_driver-class-name: {{ .Values.config.database_driver | quote }}
+  spring_jpa_hibernate_ddl-auto: "update"
+  spring_jpa_properties_hibernate_dialect: "org.hibernate.dialect.PostgreSQLDialect"
+
+  spring_security_oauth2_client_registration_accounts-service_authorization-grant-type: {{ .Values.config.oauth2.authGrantType | quote }}
+  spring_security_oauth2_client_registration_accounts-service_provider: {{ .Values.config.oauth2.serviceProvider | quote }}
+  spring_security_oauth2_client_registration_accounts-service_client-id: {{ .Values.config.oauth2.clientId | quote }}
+  spring_security_oauth2_client_provider_keycloak_issuer-uri: {{ .Values.config.oauth2.keycloakIssuerUri | quote }}
+  spring_security_oauth2_resourceserver_jwt_issuer-uri: {{ .Values.config.oauth2.issuerUri | quote }}
+  spring_security_oauth2_resourceserver_jwt_jwk-set-uri: {{ .Values.config.oauth2.jwtSetUri | quote }}
