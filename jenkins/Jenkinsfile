@@ -7,17 +7,15 @@ pipeline {
 
     environment {
         DOCKER_REGISTRY = credentials('DOCKER_REGISTRY')
-        DB_PASSWORD     = credentials('DB_PASSWORD')
         GITHUB_USERNAME = credentials('GITHUB_USERNAME')
+        GITHUB_REPOSITORY = "yungdanie/bankapp"
         IMAGE_TAG       = "latest"
     }
 
     stages {
         stage('Build') {
             steps {
-                step {
-                    sh '../gradlew build'
-                }
+                sh './gradlew build'
             }
         }
 
@@ -26,56 +24,56 @@ pipeline {
                 stage('Build accounts service') {
                     steps {
                         dir('accounts-module') {
-                            sh "docker build -t accounts-service:${IMAGE_TAG}"
+                            sh "docker build -t accounts-service:${IMAGE_TAG} ."
                         }
                     }
                 }
                 stage('Build blocker service') {
                     steps {
                         dir('blocker-module') {
-                            sh "docker build -t blocker-service:${IMAGE_TAG}"
+                            sh "docker build -t blocker-service:${IMAGE_TAG} ."
                         }
                     }
                 }
                 stage('Build cash service') {
                     steps {
                         dir('cash-module') {
-                            sh "docker build -t cash-service:${IMAGE_TAG}"
+                            sh "docker build -t cash-service:${IMAGE_TAG} ."
                         }
                     }
                 }
                 stage('Build exchange generator service') {
                     steps {
                         dir('exchange-generator-module') {
-                            sh "docker build -t exchange-generator-service:${IMAGE_TAG}"
+                            sh "docker build -t exchange-generator-service:${IMAGE_TAG} ."
                         }
                     }
                 }
                 stage('Build exchange service') {
                     steps {
                         dir('exchange-module') {
-                            sh "docker build -t exchange-service:${IMAGE_TAG}"
+                            sh "docker build -t exchange-service:${IMAGE_TAG} ."
                         }
                     }
                 }
                 stage('Build notifications service') {
                     steps {
                         dir('notifications-module') {
-                            sh "docker build -t notifications-service:${IMAGE_TAG}"
+                            sh "docker build -t notifications-service:${IMAGE_TAG} ."
                         }
                     }
                 }
                 stage('Build transfer service') {
                     steps {
                         dir('transfer-module') {
-                            sh "docker build -t transfer-service:${IMAGE_TAG}"
+                            sh "docker build -t transfer-service:${IMAGE_TAG} ."
                         }
                     }
                 }
                 stage('Build ui service') {
                     steps {
                         dir('ui-module') {
-                            sh "docker build -t ui-service:${IMAGE_TAG}"
+                            sh "docker build -t ui-service:${IMAGE_TAG} ."
                         }
                     }
                 }
@@ -123,7 +121,7 @@ pipeline {
         stage('Helm Deploy') {
             steps {
                 sh """
-                helm upgrade --install bankapp my-microservices-app/charts/customer-service \\
+                helm upgrade --install bankapp /bankapp-chart \\
                   --namespace ${ENV} --create-namespace
                 """
             }
