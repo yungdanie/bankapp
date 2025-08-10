@@ -24,13 +24,17 @@ spec:
       initContainers:
         - name: wait-for-keycloak
           image: curlimages/curl:8.7.1
-          command: [ "sh", "-c" ]
+          command: [ 'sh', '-c' ]
           args:
             - |
-              until curl -sSf http://bankapp-keycloak:8089/realms/bankapp; do
-                echo "Waiting for Keycloak...";
-                sleep 5;
+              for i in $(seq 1 30); do
+                if curl -sSf http://bankapp-keycloak:8089/realms/bankapp; then
+                  exit 0
+                fi
+                echo "Waiting for Keycloak... attempt $i/30"
+                sleep 10
               done
+              exit 1
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
