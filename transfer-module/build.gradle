@@ -6,6 +6,7 @@ apply from: "${rootDir}/common/build.gradle"
 
 dependencies {
     implementation project(":common-module")
+    implementation project(":common-web-module")
 
     // spring webflux
     implementation 'org.springframework.boot:spring-boot-starter-webflux'

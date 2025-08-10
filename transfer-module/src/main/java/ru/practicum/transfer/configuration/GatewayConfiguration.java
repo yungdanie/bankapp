@@ -3,13 +3,8 @@ package ru.practicum.transfer.configuration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
-import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientManager;
-import org.springframework.web.reactive.function.client.ClientRequest;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
-import ru.practicum.common.exception.BadRequestException;
+import ru.practicum.commonweb.factory.WebClientFactory;
 
 @Configuration
 public class GatewayConfiguration {
@@ -20,60 +15,34 @@ public class GatewayConfiguration {
 
     private final String blockerServiceURL;
 
+    private final WebClientFactory webClientFactory;
+
+    private static final String CLIENT_REGISTRATION_ID = "transfer-service";
+
     public GatewayConfiguration(
             @Value("${gateway.accountServiceURL}") String accountsServiceURL,
             @Value("${gateway.exchangeServiceURL}") String exchangeServiceURL,
-            @Value("${gateway.blockerServiceURL}") String blockerServiceURL
+            @Value("${gateway.blockerServiceURL}") String blockerServiceURL,
+            WebClientFactory webClientFactory
     ) {
+        this.webClientFactory = webClientFactory;
         this.accountsServiceURL = accountsServiceURL;
         this.blockerServiceURL = blockerServiceURL;
         this.exchangeServiceURL = exchangeServiceURL;
     }
 
-    private WebClient getWebClient(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager, String serviceURL) {
-        ExchangeFilterFunction errorHandler = ExchangeFilterFunction.ofResponseProcessor(
-                response -> {
-                    if (response.statusCode().is4xxClientError()) {
-                        return response.bodyToMono(Error.class)
-                                .flatMap(body -> Mono.error(new BadRequestException(body.getMessage())));
-                    } else {
-                        return Mono.just(response);
-                    }
-                }
-        );
-
-        return WebClient.builder()
-                .filter((request, next) ->
-                        reactiveOAuth2AuthorizedClientManager.authorize(
-                                        OAuth2AuthorizeRequest
-                                                .withClientRegistrationId("transfer-service")
-                                                .principal("transfer-service")
-                                                .build()
-                                )
-                                .flatMap(authorizedClient -> {
-                                    ClientRequest newRequest = ClientRequest.from(request)
-                                            .headers(headers -> headers.setBearerAuth(authorizedClient.getAccessToken().getTokenValue()))
-                                            .build();
-                                    return next.exchange(newRequest);
-                                })
-                )
-                .filter(errorHandler)
-                .baseUrl(serviceURL)
-                .build();
+    @Bean
+    public WebClient accountsAPI() {
+        return webClientFactory.getOAuth2WebClient(accountsServiceURL, CLIENT_REGISTRATION_ID);
     }
 
     @Bean
-    public WebClient accountsAPI(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager) {
-        return getWebClient(reactiveOAuth2AuthorizedClientManager, accountsServiceURL);
+    public WebClient blockerAPI() {
+        return webClientFactory.getOAuth2WebClient(blockerServiceURL, CLIENT_REGISTRATION_ID);
     }
 
     @Bean
-    public WebClient blockerAPI(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager) {
-        return getWebClient(reactiveOAuth2AuthorizedClientManager, blockerServiceURL);
-    }
-
-    @Bean
-    public WebClient exchangeAPI(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager) {
-        return getWebClient(reactiveOAuth2AuthorizedClientManager, exchangeServiceURL);
+    public WebClient exchangeAPI() {
+        return webClientFactory.getOAuth2WebClient(exchangeServiceURL, CLIENT_REGISTRATION_ID);
     }
 }

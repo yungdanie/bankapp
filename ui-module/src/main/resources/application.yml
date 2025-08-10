@@ -1,3 +1,8 @@
 spring:
   application:
     name: bankui
+
+web:
+  exception-handler:
+    enabled: false
+  client-registration-id: ''
