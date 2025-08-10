@@ -4,5 +4,5 @@ include 'ui-module', 'accounts-module',
         'cash-module', 'notifications-module',
         'transfer-module', 'exchange-module',
         'exchange-generator-module', 'blocker-module',
-        'common-module', 'gateway-module'
+        'common-module', 'common-web-module'
 
