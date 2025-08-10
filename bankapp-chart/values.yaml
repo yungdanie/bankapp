@@ -55,9 +55,9 @@ accounts-service:
           - path: /
             pathType: Prefix
   config:
-    database_url: "jdbc:postgresql://bankapp-accounts-db:5432/accounts"
-    database_username: "accounts_user"
-    database_driver: org.postgresql.Driver
+    databaseURL: "jdbc:postgresql://bankapp-accounts-db:5432/accounts"
+    databaseUsername: "accounts_user"
+    databaseDriver: org.postgresql.Driver
     oauth2:
       issuerUri: http://bankapp-keycloak:8089/realms/bankapp
       jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
@@ -66,7 +66,7 @@ accounts-service:
       clientId: "accounts-service"
       keycloakIssuerUri: http://bankapp-keycloak:8089/realms/bankapp
   secret:
-    database_password: "password"
+    databasePassword: "password"
     oauth2ClientSecret: "secret"
   accounts-db:
     enabled: true
@@ -100,10 +100,10 @@ exchange-service:
           - path: /
             pathType: Prefix
   config:
-    database_url: "jdbc:postgresql://bankapp-exchange-db:5432/exchange"
-    database_username: "exchange_user"
-    database_driver: org.postgresql.Driver
-    database_password: "password"
+    databaseURL: "jdbc:postgresql://bankapp-exchange-db:5432/exchange"
+    databaseUsername: "exchange_user"
+    databaseDriver: org.postgresql.Driver
+    databasePassword: "password"
     oauth2:
       issuerUri: http://bankapp-keycloak:8089/realms/bankapp
       jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
@@ -170,7 +170,7 @@ cash-service:
       clientId: "cash-service"
       keycloakIssuerUri: http://bankapp-keycloak:8089/realms/bankapp
   secret:
-    database_password: "password"
+    databasePassword: "password"
     oauth2ClientSecret: "secret"
 
 exchange-generator-service:
