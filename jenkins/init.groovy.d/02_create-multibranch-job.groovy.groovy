@@ -13,6 +13,11 @@ def scriptPath    = "jenkins/Jenkinsfile"
 
 println "--> Запуск create-multibranch-job.groovy"
 
+if (!credentialsId) {
+    println "credentialsId не был установлен"
+    return
+}
+
 if (!githubRepo) {
     println "Переменная окружения GITHUB_REPOSITORY не задана (пример: owner/repo)"
     return
