@@ -25,7 +25,7 @@ public class SecurityConfiguration {
                             return config;
                         }))
                         .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/api/exchange/rates", "/actuator/**").permitAll()
+                                .requestMatchers("/api/exchange/rates", "/actuator/health", "/actuator/ready").permitAll()
                                 .anyRequest().authenticated())
                         .formLogin(AbstractHttpConfigurer::disable)
                         .logout(AbstractHttpConfigurer::disable)

@@ -19,7 +19,7 @@ public class SecurityConfiguration {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges ->
                         exchanges
-                                .pathMatchers("/actuator/**").permitAll()
+                                .pathMatchers("/actuator/health", "/actuator/ready").permitAll()
                                 .anyExchange().authenticated()
                 )
                 .logout(ServerHttpSecurity.LogoutSpec::disable)
