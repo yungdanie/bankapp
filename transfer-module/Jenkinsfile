@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         GRADLE_PATH = './gradlew'
-        BUILD_FLAGS = ' '
         IMAGE_TAG = 'latest'
         HELM_RELEASE = 'bankapp'
         CHART_PATH = './bankapp-chart/charts/transfer-service'
@@ -21,7 +20,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "${GRADLE_PATH} build ${BUILD_FLAGS}"
+                sh "${GRADLE_PATH} build"
             }
         }
 
@@ -34,9 +33,14 @@ pipeline {
         }
 
         stage('Helm dependencies update') {
-            steps {
-                sh "helm helm dependency update ${CHART_PATH}"
+          steps {
+            retry(3) {
+              timeout(time: 3, unit: 'MINUTES') {
+                sh label: 'helm deps',
+                   script: "helm dependency update '${CHART_PATH}'"
+              }
             }
+          }
         }
 
         stage('Helm Upgrade') {

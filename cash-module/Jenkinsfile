@@ -34,9 +34,14 @@ pipeline {
         }
 
         stage('Helm dependencies update') {
-            steps {
-                sh "helm helm dependency update ${CHART_PATH}"
+          steps {
+            retry(3) {
+              timeout(time: 3, unit: 'MINUTES') {
+                sh label: 'helm deps',
+                   script: "helm dependency update '${CHART_PATH}'"
+              }
             }
+          }
         }
 
         stage('Helm Upgrade') {
