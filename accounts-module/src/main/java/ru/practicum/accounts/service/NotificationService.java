@@ -1,23 +1,22 @@
 package ru.practicum.accounts.service;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 import ru.practicum.common.Event;
+import ru.practicum.common.KafkaTopic;
+
+import java.util.UUID;
 
 @Service
 public class NotificationService {
 
-    private final RestClient notificationAPI;
+    private final KafkaTemplate<UUID, Event> kafkaTemplate;
 
-    public NotificationService(@Qualifier("notificationAPI") RestClient notificationAPI) {
-        this.notificationAPI = notificationAPI;
+    public NotificationService(KafkaTemplate<UUID, Event> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     public void sendNotification(Event event) {
-        notificationAPI.post().body(event).retrieve()
-                .onStatus(HttpStatusCode::isError, (request, response) -> {})
-                .toBodilessEntity();
+        kafkaTemplate.send(KafkaTopic.NOTIFICATIONS.name(), UUID.randomUUID(), event);
     }
 }
