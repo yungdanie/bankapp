@@ -4,14 +4,14 @@ global:
     httpGet:
       path: /actuator/health/liveness
       port: http
-    initialDelaySeconds: 30
+    initialDelaySeconds: 40
     periodSeconds: 10
   readinessProbe: # Example for Spring Boot Actuator
     httpGet:
       path: /actuator/health/readiness
       port: http
-    initialDelaySeconds: 15
-    periodSeconds: 5
+    initialDelaySeconds: 40
+    periodSeconds: 10
   commonMapRefName: "bankapp-configmap"
   commonSecretRefName: "bankapp-secret"
 
@@ -55,6 +55,7 @@ accounts-service:
           - path: /
             pathType: Prefix
   config:
+    kafkaServers: "bankapp-kafka:9092"
     databaseURL: "jdbc:postgresql://bankapp-accounts-db:5432/accounts"
     databaseUsername: "accounts_user"
     databaseDriver: org.postgresql.Driver
@@ -104,6 +105,7 @@ exchange-service:
     databaseUsername: "exchange_user"
     databaseDriver: org.postgresql.Driver
     databasePassword: "password"
+    kafkaServers: "bankapp-kafka:9092"
     oauth2:
       issuerUri: http://bankapp-keycloak:8089/realms/bankapp
       jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
@@ -193,6 +195,7 @@ exchange-generator-service:
           - path: /
             pathType: Prefix
   config:
+    kafkaServers: "bankapp-kafka:9092"
     oauth2:
       issuerUri: http://bankapp-keycloak:8089/realms/bankapp
       jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
@@ -254,6 +257,7 @@ notifications-service:
           - path: /
             pathType: Prefix
   config:
+    kafkaServers: "bankapp-kafka:9092"
     oauth2:
       issuerUri: http://bankapp-keycloak:8089/realms/bankapp
       jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
