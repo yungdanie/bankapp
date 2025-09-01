@@ -74,20 +74,18 @@ public class RateService {
                 .toList();
     }
 
-    public void updateRates(List<ExchangeRateUpdate> exchangeRates) {
-        exchangeRates.forEach(dto -> {
-            var exchangeRate = exchangeRateRepository.findByFromCurrencyCodeAndToCurrencyCode(
-                    dto.fromCurrencyCode(),
-                    dto.toCurrencyCode()
-            );
+    public void updateRates(ExchangeRateUpdate inputRate) {
+        var exchangeRate = exchangeRateRepository.findByFromCurrencyCodeAndToCurrencyCode(
+                inputRate.fromCurrencyCode(),
+                inputRate.toCurrencyCode()
+        );
 
-            if (exchangeRate == null) {
-                exchangeRateRepository.save(
-                        new ExchangeRate(dto.fromCurrencyCode(), dto.toCurrencyCode(), dto.rate())
-                );
-            } else {
-                exchangeRate.setRate(dto.rate());
-            }
-        });
+        if (exchangeRate == null) {
+            exchangeRateRepository.save(
+                    new ExchangeRate(inputRate.fromCurrencyCode(), inputRate.toCurrencyCode(), inputRate.rate())
+            );
+        } else {
+            exchangeRate.setRate(inputRate.rate());
+        }
     }
 }
