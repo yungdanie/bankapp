@@ -8,6 +8,9 @@ dependencies {
     implementation project(":common-module")
     implementation project(":common-web-module")
 
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+
+    implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 }
