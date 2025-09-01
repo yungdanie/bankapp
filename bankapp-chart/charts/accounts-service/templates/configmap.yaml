@@ -9,6 +9,8 @@ data:
   spring_jpa_hibernate_ddl-auto: "update"
   spring_jpa_properties_hibernate_dialect: "org.hibernate.dialect.PostgreSQLDialect"
 
+  spring_kafka_bootstrap-servers: {{ .Values.config.kafkaServers | quote }}
+
   spring_security_oauth2_client_registration_accounts-service_authorization-grant-type: {{ .Values.config.oauth2.authGrantType | quote }}
   spring_security_oauth2_client_registration_accounts-service_provider: {{ .Values.config.oauth2.serviceProvider | quote }}
   spring_security_oauth2_client_registration_accounts-service_client-id: {{ .Values.config.oauth2.clientId | quote }}

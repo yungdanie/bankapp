@@ -27,3 +27,6 @@ dependencies:
   - name: keycloak
     version: 24.8.1
     repository: https://charts.bitnami.com/bitnami
+  - name: kafka
+    version: 32.4.3
+    repository: https://charts.bitnami.com/bitnami

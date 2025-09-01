@@ -3,5 +3,6 @@ kind: ConfigMap
 metadata:
   name: {{ include "notifications-service.fullname" . }}
 data:
+  spring_kafka_bootstrap-servers: {{ .Values.config.kafkaServers | quote }}
   spring_security_oauth2_resourceserver_jwt_issuer-uri: {{ .Values.config.oauth2.issuerUri | quote }}
   spring_security_oauth2_resourceserver_jwt_jwk-set-uri: {{ .Values.config.oauth2.jwtSetUri | quote }}
