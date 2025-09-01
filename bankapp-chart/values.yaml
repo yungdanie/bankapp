@@ -325,3 +325,70 @@ keycloak:
       port: 8080
     initialDelaySeconds: 50
     periodSeconds: 10
+
+kafka:
+  clusterId: "bankapp-kafka-cluster"
+
+  extraEnvVars:
+    - name: "BITNAMI_DEBUG"
+      value: "yes"
+
+  provisioning:
+    enabled: true
+    resourcesPreset: small
+    numPartitions: 3
+    replicationFactor: 1
+    topics:
+      - name: NOTIFICATIONS
+        config:
+          cleanup.policy: delete
+          retention.ms: "600000"
+
+      - name: EXCHANGES
+        config:
+          cleanup.policy: compact
+
+  listeners:
+    client:
+      protocol: PLAINTEXT
+    controller:
+      protocol: PLAINTEXT
+    interbroker:
+      protocol: PLAINTEXT
+
+  broker:
+    brokerOnly: true
+    resourcesPreset: small
+    replicaCount: 1
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 30
+      timeoutSeconds: 10
+      failureThreshold: 5
+    readinessProbe:
+      enabled: true
+      initialDelaySeconds: 30
+      timeoutSeconds: 10
+      failureThreshold: 5
+
+    persistence:
+      enabled: true
+      size: 1Gi
+
+  controller:
+    replicaCount: 1
+    controllerOnly: true
+    resourcesPreset: small
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 30
+      timeoutSeconds: 10
+      failureThreshold: 5
+    readinessProbe:
+      enabled: true
+      initialDelaySeconds: 30
+      timeoutSeconds: 10
+      failureThreshold: 5
+    persistence:
+      enabled: true
+      size: 1Gi
