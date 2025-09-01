@@ -1,17 +1,10 @@
 package ru.practicum.ui.configuration;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
-import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientManager;
-import org.springframework.web.reactive.function.client.ClientRequest;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
-import ru.practicum.common.exception.BadRequestException;
+import ru.practicum.commonweb.factory.WebClientFactory;
 
 @Configuration
 public class GatewayConfiguration {
@@ -22,65 +15,34 @@ public class GatewayConfiguration {
 
     private final String transferServiceURL;
 
+    private final WebClientFactory webClientFactory;
+
+    private static final String CLIENT_REGISTRATION_ID = "bankui-service";
+
     public GatewayConfiguration(
-            @Value("${gateway.url}") String url,
+            WebClientFactory webClientFactory,
             @Value("${gateway.accountServiceURL}") String accountsServiceURL,
             @Value("${gateway.cashServiceURL}") String cashServiceURL,
             @Value("${gateway.transferServiceURL}") String transferServiceURL
     ) {
-        this.accountsServiceURL = url.concat(accountsServiceURL);
-        this.cashServiceURL = url.concat(cashServiceURL);
-        this.transferServiceURL = url.concat(transferServiceURL);
-    }
-
-    @NotNull
-    private WebClient getWebClient(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager, String serviceURL) {
-        ExchangeFilterFunction errorHandler = ExchangeFilterFunction.ofResponseProcessor(
-                response -> {
-                    if (response.statusCode().is4xxClientError()) {
-                        return response.bodyToMono(Error.class)
-                                .flatMap(body -> Mono.error(new BadRequestException(body.getMessage())));
-                    } else {
-                        return Mono.just(response);
-                    }
-                }
-        );
-
-        return WebClient.builder()
-                .filter((request, next) ->
-                        reactiveOAuth2AuthorizedClientManager.authorize(
-                                        OAuth2AuthorizeRequest
-                                                .withClientRegistrationId("bankui-service")
-                                                .principal("bankui")
-                                                .build()
-                                )
-                                .flatMap(authorizedClient -> {
-                                    ClientRequest newRequest = ClientRequest.from(request)
-                                            .headers(headers -> headers.setBearerAuth(authorizedClient.getAccessToken().getTokenValue()))
-                                            .build();
-                                    return next.exchange(newRequest);
-                                })
-                )
-                .filter(errorHandler)
-                .baseUrl(serviceURL)
-                .build();
+        this.webClientFactory = webClientFactory;
+        this.accountsServiceURL = accountsServiceURL;
+        this.cashServiceURL = cashServiceURL;
+        this.transferServiceURL = transferServiceURL;
     }
 
     @Bean
-    @LoadBalanced
-    public WebClient accountsAPI(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager) {
-        return getWebClient(reactiveOAuth2AuthorizedClientManager, accountsServiceURL);
+    public WebClient accountsAPI() {
+        return webClientFactory.getOAuth2WebClient(accountsServiceURL, CLIENT_REGISTRATION_ID);
     }
 
     @Bean
-    @LoadBalanced
-    public WebClient cashAPI(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager) {
-        return getWebClient(reactiveOAuth2AuthorizedClientManager, cashServiceURL);
+    public WebClient cashAPI() {
+        return webClientFactory.getOAuth2WebClient(cashServiceURL, CLIENT_REGISTRATION_ID);
     }
 
     @Bean
-    @LoadBalanced
-    public WebClient transferAPI(ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager) {
-        return getWebClient(reactiveOAuth2AuthorizedClientManager, transferServiceURL);
+    public WebClient transferAPI() {
+        return webClientFactory.getOAuth2WebClient(transferServiceURL, CLIENT_REGISTRATION_ID);
     }
 }

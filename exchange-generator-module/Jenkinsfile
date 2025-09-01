@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+
+    environment {
+        GRADLE_PATH = './gradlew'
+        IMAGE_TAG = 'latest'
+        HELM_RELEASE = 'bankapp'
+        CHART_PATH = './bankapp-chart/charts/exchange-generator-service'
+        MODULE_NAME = 'exchange-generator-module'
+        HELM_NAMESPACE = 'default'
+        SERVICE_NAME = 'exchange-generator-service'
+    }
+
+    stages {
+        stage('Clone repo') {
+            steps {
+                git 'https://github.com/yungdanie/bankapp.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh "${GRADLE_PATH} build"
+            }
+        }
+
+        stage('Build image') {
+            steps {
+                dir("${MODULE_NAME}") {
+                    docker.build("${SERVICE_NAME}:${IMAGE_TAG}")
+                }
+            }
+        }
+
+        stage('Helm dependencies update') {
+          steps {
+            retry(3) {
+              timeout(time: 3, unit: 'MINUTES') {
+                sh label: 'helm deps',
+                   script: "helm dependency update '${CHART_PATH}'"
+              }
+            }
+          }
+        }
+
+        stage('Helm Upgrade') {
+             steps {
+                 sh '''
+                     helm upgrade --install ${HELM_RELEASE} ${CHART_PATH} \
+                         --namespace ${HELM_NAMESPACE} \
+                         --create-namespace \
+                         --set image.tag=${IMAGE_TAG}
+                 '''
+             }
+        }
+    }
+}

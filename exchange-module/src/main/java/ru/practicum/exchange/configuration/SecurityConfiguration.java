@@ -9,23 +9,25 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(ru.practicum.exchange.configuration.CorsConfiguration corsConfiguration, HttpSecurity http) throws Exception {
         return
                 http.csrf(AbstractHttpConfigurer::disable)
                         .cors(cors -> cors.configurationSource(request -> {
                             CorsConfiguration config = new CorsConfiguration();
-                            config.addAllowedOrigin("http://localhost:8088"); // Ваш фронтенд
-                            config.addAllowedMethod("*");
-                            config.addAllowedHeader("*");
+                            config.addAllowedOrigin(corsConfiguration.origin());
+                            config.addAllowedMethod(corsConfiguration.method());
+                            config.addAllowedHeader(corsConfiguration.header());
                             return config;
                         }))
                         .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/api/exchange/rates").permitAll()
+                                .requestMatchers("/api/exchange/rates", "/actuator/health", "/actuator/ready").permitAll()
                                 .anyRequest().authenticated())
                         .formLogin(AbstractHttpConfigurer::disable)
                         .logout(AbstractHttpConfigurer::disable)

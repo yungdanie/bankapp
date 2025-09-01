@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.global.commonMapRefName }}
+data:
+  gateway_notificationServiceURL: {{ .Values.common.config.notificationServiceURL | quote }}
+  gateway_accountServiceURL: {{ .Values.common.config.accountServiceURL | quote }}
+  gateway_blockerServiceURL: {{ .Values.common.config.blockerServiceURL | quote }}
+  gateway_cashServiceURL: {{ .Values.common.config.cashServiceURL | quote }}
+  gateway_transferServiceURL: {{ .Values.common.config.transferServiceURL | quote }}
+  gateway_exchangeServiceURL: {{ .Values.common.config.exchangeServiceURL | quote }}
+  management_endpoints_web_exposure_include: {{ .Values.common.config.endPointsWebExposureInclude | quote }}
+  management_endpoint_health_show-details: {{ .Values.common.config.healthShowDetails | quote }}
+  management_health_circuitbreakers_enabled: {{ .Values.common.config.circuitBreakersEnabled | quote }}
+  management_health_ratelimiters_enabled: {{ .Values.common.config.rateLimitersEnabled | quote }}

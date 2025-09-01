@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-realm
+data:
+  bankapp-realm.json: |
+    {
+      "realm": "bankapp",
+      "enabled": true,
+      "clients": [
+        {
+          "clientId": "ui-service",
+          "secret": "secret",
+          "serviceAccountsEnabled": true,
+          "publicClient": false,
+          "protocol": "openid-connect"
+        },
+        {
+          "clientId": "accounts-service",
+          "secret": "secret",
+          "serviceAccountsEnabled": true,
+          "publicClient": false,
+          "protocol": "openid-connect"
+        },
+        {
+          "clientId": "notifications-service",
+          "secret": "secret",
+          "serviceAccountsEnabled": true,
+          "publicClient": false,
+          "protocol": "openid-connect"
+        },
+        {
+          "clientId": "transfer-service",
+          "secret": "secret",
+          "serviceAccountsEnabled": true,
+          "publicClient": false,
+          "protocol": "openid-connect"
+        },
+        {
+          "clientId": "exchange-generator-service",
+          "secret": "secret",
+          "serviceAccountsEnabled": true,
+          "publicClient": false,
+          "protocol": "openid-connect"
+        },
+        {
+          "clientId": "cash-service",
+          "secret": "secret",
+          "serviceAccountsEnabled": true,
+          "publicClient": false,
+          "protocol": "openid-connect"
+        }
+      ]
+    }

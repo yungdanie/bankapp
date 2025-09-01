@@ -1,0 +1,130 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'ENV', defaultValue: 'test', description: 'Env of application (test/prod/etc..)')
+    }
+
+    environment {
+        DOCKER_REGISTRY = credentials('DOCKER_REGISTRY')
+        GITHUB_USERNAME = credentials('GITHUB_USERNAME')
+        GITHUB_REPOSITORY = "yungdanie/bankapp"
+        IMAGE_TAG       = "latest"
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                sh './gradlew build'
+            }
+        }
+
+        stage('Build Docker Images') {
+            parallel {
+                stage('Build accounts service') {
+                    steps {
+                        dir('accounts-module') {
+                            sh "docker build -t accounts-service:${IMAGE_TAG} ."
+                        }
+                    }
+                }
+                stage('Build blocker service') {
+                    steps {
+                        dir('blocker-module') {
+                            sh "docker build -t blocker-service:${IMAGE_TAG} ."
+                        }
+                    }
+                }
+                stage('Build cash service') {
+                    steps {
+                        dir('cash-module') {
+                            sh "docker build -t cash-service:${IMAGE_TAG} ."
+                        }
+                    }
+                }
+                stage('Build exchange generator service') {
+                    steps {
+                        dir('exchange-generator-module') {
+                            sh "docker build -t exchange-generator-service:${IMAGE_TAG} ."
+                        }
+                    }
+                }
+                stage('Build exchange service') {
+                    steps {
+                        dir('exchange-module') {
+                            sh "docker build -t exchange-service:${IMAGE_TAG} ."
+                        }
+                    }
+                }
+                stage('Build notifications service') {
+                    steps {
+                        dir('notifications-module') {
+                            sh "docker build -t notifications-service:${IMAGE_TAG} ."
+                        }
+                    }
+                }
+                stage('Build transfer service') {
+                    steps {
+                        dir('transfer-module') {
+                            sh "docker build -t transfer-service:${IMAGE_TAG} ."
+                        }
+                    }
+                }
+                stage('Build ui service') {
+                    steps {
+                        dir('ui-module') {
+                            sh "docker build -t ui-service:${IMAGE_TAG} ."
+                        }
+                    }
+                }
+            }
+        }
+
+//         stage('Push Docker Images') {
+//             steps {
+//                 withCredentials([string(credentialsId: 'GHCR_TOKEN', variable: 'GHCR_TOKEN')]) {
+//                     sh """
+//                     echo \$GHCR_TOKEN | docker login ghcr.io -u ${GITHUB_USERNAME} --password-stdin
+//                     docker push ${DOCKER_REGISTRY}/customer-service:${IMAGE_TAG}
+//                     docker push ${DOCKER_REGISTRY}/order-service:${IMAGE_TAG}
+//                     """
+//                 }
+//             }
+//         }
+
+        stage('Update Helm Charts') {
+            parallel {
+                stage('Update accounts service chart') {
+                    steps {
+                        dir('bankapp-chart') {
+                            sh "helm dependency update ./charts/accounts-service/"
+                        }
+                    }
+                }
+                stage('Update blocker service chart') {
+                    steps {
+                        dir('bankapp-chart') {
+                            sh "helm dependency update ./charts/exchange-service/"
+                        }
+                    }
+                }
+                stage('Update bankapp chart') {
+                    steps {
+                        dir('bankapp-chart') {
+                         sh "helm dependency update ./"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Helm Deploy') {
+            steps {
+                sh """
+                helm upgrade --install bankapp /bankapp-chart \\
+                  --namespace ${ENV} --create-namespace
+                """
+            }
+        }
+    }
+}

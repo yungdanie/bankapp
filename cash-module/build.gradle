@@ -8,6 +8,7 @@ dependencies {
     // spring webflux
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+    implementation project(":common-web-module")
     implementation project(":common-module")
 }
 

@@ -17,7 +17,11 @@ public class SecurityConfiguration {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange(exchanges -> exchanges.anyExchange().authenticated())
+                .authorizeExchange(exchanges ->
+                        exchanges
+                                .pathMatchers("/actuator/health", "/actuator/ready").permitAll()
+                                .anyExchange().authenticated()
+                )
                 .logout(ServerHttpSecurity.LogoutSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))

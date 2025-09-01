@@ -3,11 +3,11 @@ package ru.practicum.ui.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+import ru.practicum.common.exception.ValidateException;
 
 import javax.crypto.SecretKey;
 import java.util.List;
@@ -40,7 +40,7 @@ public class JwtService {
                     roles.stream().map(SimpleGrantedAuthority::new).toList()
             );
         } catch (JwtException | IllegalArgumentException e) {
-            throw new ValidationException("JWT-невалиден");
+            throw new ValidateException("JWT-невалиден");
         }
     }
 }

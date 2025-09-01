@@ -1,12 +1,8 @@
 package ru.practicum.accounts.service;
 
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;

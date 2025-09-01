@@ -1,0 +1,327 @@
+# Global values (if any)
+global:
+  livenessProbe: # Example for Spring Boot Actuator
+    httpGet:
+      path: /actuator/health/liveness
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readinessProbe: # Example for Spring Boot Actuator
+    httpGet:
+      path: /actuator/health/readiness
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+  commonMapRefName: "bankapp-configmap"
+  commonSecretRefName: "bankapp-secret"
+
+common:
+  config:
+    notificationServiceURL: "http://bankapp-notification-service"
+    accountServiceURL: "http://bankapp-accounts-service"
+    blockerServiceURL: "http://bankapp-blocker-service"
+    cashServiceURL: "http://bankapp-cash-service"
+    transferServiceURL: "http://bankapp-transfer-service"
+    exchangeServiceURL: "http://bankapp-exchange-service"
+    endPointsWebExposureInclude: "*"
+    healthShowDetails: "always"
+    circuitBreakersEnabled: "true"
+    rateLimitersEnabled: "true"
+  secret:
+    jwtSecret: "aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789+ab="
+    jwtExpiration: "300m"
+
+
+fullnameOverride: ""
+nameOverride: ""
+
+accounts-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: accounts-service # Removed registry prefix
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8080
+  ingress:
+    enabled: true
+    className: "nginx" # Specify your ingress controller class
+    hosts:
+      - host: accounts.local # Use global domain or specific
+        paths:
+          - path: /
+            pathType: Prefix
+  config:
+    databaseURL: "jdbc:postgresql://bankapp-accounts-db:5432/accounts"
+    databaseUsername: "accounts_user"
+    databaseDriver: org.postgresql.Driver
+    oauth2:
+      issuerUri: http://bankapp-keycloak:8089/realms/bankapp
+      jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
+      authGrantType: "client_credentials"
+      serviceProvider: "keycloak"
+      clientId: "accounts-service"
+      keycloakIssuerUri: http://bankapp-keycloak:8089/realms/bankapp
+  secret:
+    databasePassword: "password"
+    oauth2ClientSecret: "secret"
+  accounts-db:
+    enabled: true
+    auth:
+      database: accounts
+      username: accounts_user
+      password: "password"
+    primary:
+      persistence:
+        enabled: true
+        size: 512Mi
+
+
+exchange-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: exchange-service # Removed registry prefix
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8084
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: exchange.local
+        paths:
+          - path: /
+            pathType: Prefix
+  config:
+    databaseURL: "jdbc:postgresql://bankapp-exchange-db:5432/exchange"
+    databaseUsername: "exchange_user"
+    databaseDriver: org.postgresql.Driver
+    databasePassword: "password"
+    oauth2:
+      issuerUri: http://bankapp-keycloak:8089/realms/bankapp
+      jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
+  exchange-db:
+    enabled: true
+    auth:
+      database: exchange
+      username: exchange_user
+      password: "password"
+    primary:
+      persistence:
+        enabled: true
+        size: 512Mi
+
+blocker-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: blocker-service # Removed registry prefix
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8081
+  ingress:
+    enabled: true
+    className: "nginx" # Specify your ingress controller class
+    hosts:
+      - host: blocker.local # Use global domain or specific
+        paths:
+          - path: /
+            pathType: Prefix
+  config:
+    oauth2:
+      issuerUri: http://bankapp-keycloak:8089/realms/bankapp
+      jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
+
+cash-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: cash-service # Removed registry prefix
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8082
+  ingress:
+    enabled: true
+    className: "nginx" # Specify your ingress controller class
+    hosts:
+      - host: cash.local # Use global domain or specific
+        paths:
+          - path: /
+            pathType: Prefix
+  config:
+    oauth2:
+      issuerUri: http://bankapp-keycloak:8089/realms/bankapp
+      jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
+      authGrantType: "client_credentials"
+      serviceProvider: "keycloak"
+      clientId: "cash-service"
+      keycloakIssuerUri: http://bankapp-keycloak:8089/realms/bankapp
+  secret:
+    databasePassword: "password"
+    oauth2ClientSecret: "secret"
+
+exchange-generator-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: exchange-generator-service
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8083
+  ingress:
+    enabled: true
+    className: "nginx" # Specify your ingress controller class
+    hosts:
+      - host: exchange-generator.local # Use global domain or specific
+        paths:
+          - path: /
+            pathType: Prefix
+  config:
+    oauth2:
+      issuerUri: http://bankapp-keycloak:8089/realms/bankapp
+      jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
+      authGrantType: "client_credentials"
+      serviceProvider: "keycloak"
+      clientId: "exchange-generator-service"
+      keycloakIssuerUri: http://bankapp-keycloak:8089/realms/bankapp
+  secret:
+    oauth2ClientSecret: "secret"
+
+
+transfer-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: transfer-service # Removed registry prefix
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8087
+  ingress:
+    enabled: true
+    className: "nginx" # Specify your ingress controller class
+    hosts:
+      - host: transfer.local # Use global domain or specific
+        paths:
+          - path: /
+            pathType: Prefix
+  config:
+    oauth2:
+      issuerUri: http://bankapp-keycloak:8089/realms/bankapp
+      jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
+      authGrantType: "client_credentials"
+      serviceProvider: "keycloak"
+      clientId: "transfer-service"
+      keycloakIssuerUri: http://bankapp-keycloak:8089/realms/bankapp
+  secret:
+    oauth2ClientSecret: "secret"
+
+notifications-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: notifications-service # Removed registry prefix
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8086
+  ingress:
+    enabled: true
+    className: "nginx" # Specify your ingress controller class
+    hosts:
+      - host: notifications.local # Use global domain or specific
+        paths:
+          - path: /
+            pathType: Prefix
+  config:
+    oauth2:
+      issuerUri: http://bankapp-keycloak:8089/realms/bankapp
+      jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
+
+ui-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: ui-service # Removed registry prefix
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8088
+  ingress:
+    enabled: true
+    className: "nginx" # Specify your ingress controller class
+    hosts:
+      - host: ui.local # Use global domain or specific
+        paths:
+          - path: /
+            pathType: Prefix
+  config:
+    oauth2:
+      issuerUri: http://bankapp-keycloak:8089/realms/bankapp
+      jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
+      authGrantType: "client_credentials"
+      serviceProvider: "keycloak"
+      clientId: "ui-service"
+      keycloakIssuerUri: http://bankapp-keycloak:8089/realms/bankapp
+  secret:
+    oauth2ClientSecret: "secret"
+
+keycloak:
+  enabled: true
+  postgresql:
+    enabled: true
+    auth:
+      postgresPassword: password
+      username: bn_keycloak
+      password: password
+      database: keycloak_db
+  auth:
+    adminUser: admin
+    adminPassword: admin
+  extraStartupArgs: "--import-realm"
+  extraEnvVars:
+    - name: KEYCLOAK_EXTRA_ARGS
+      value: --import-realm
+  service:
+    ports:
+      http: 8089
+  volumeMounts:
+    - name: config
+      mountPath: /config
+  extraVolumes:
+    - name: config
+      configMap:
+        name: keycloak-realm
+  extraVolumeMounts:
+    - name: config
+      mountPath: "/opt/bitnami/keycloak/data/import"
+      readOnly: true
+
+  readinessProbe:
+    httpGet:
+      path: /auth/realms/master/.well-known/openid-configuration
+      port: 8080
+    initialDelaySeconds: 50
+    periodSeconds: 10

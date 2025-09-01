@@ -27,6 +27,7 @@ dependencies {
 
     testImplementation 'com.h2database:h2'
 
+    implementation project(":common-web-module")
     implementation project(":common-module")
 }
 

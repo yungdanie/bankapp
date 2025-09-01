@@ -36,7 +36,9 @@ public class SecurityConfiguration {
     ) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange(exchanges -> exchanges.anyExchange().authenticated())
+                .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers("/actuator/health", "/actuator/ready").permitAll()
+                        .anyExchange().authenticated())
                 .oauth2ResourceServer(oAuth2ResourceServerSpec -> oAuth2ResourceServerSpec.jwt(Customizer.withDefaults()))
                 .logout(ServerHttpSecurity.LogoutSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)

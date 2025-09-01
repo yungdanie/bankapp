@@ -9,6 +9,7 @@ import ru.practicum.accounts.repository.UserRepository;
 import ru.practicum.accounts.service.AccountService;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Component
 @AllArgsConstructor
@@ -20,7 +21,11 @@ public class ApplicationReadyListener implements ApplicationListener<Application
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        var user = userRepository.save(new User("admin", "admin", "admin", LocalDate.now()));
-        accountService.onNewUser(user);
+        Optional.ofNullable(userRepository.findByLogin("admin"))
+                .or(() -> {
+                    var user = userRepository.save(new User("admin", "admin", "admin", LocalDate.now()));
+                    accountService.onNewUser(user);
+                    return Optional.of(user);
+                });
     }
 }
