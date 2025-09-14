@@ -27,6 +27,9 @@ common:
     healthShowDetails: "always"
     circuitBreakersEnabled: "true"
     rateLimitersEnabled: "true"
+    zipkin:
+      endpoint: "http://bankapp-zipkin:9411/api/v2/spans"
+      samplingProbability: 1
   secret:
     jwtSecret: "aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789+ab="
     jwtExpiration: "300m"
