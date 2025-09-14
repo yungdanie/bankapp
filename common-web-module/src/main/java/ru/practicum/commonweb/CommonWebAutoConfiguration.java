@@ -14,19 +14,6 @@ import ru.practicum.commonweb.factory.WebClientFactory;
 public class CommonWebAutoConfiguration {
 
     @Configuration
-    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-    static class ServletHttpConfig {
-
-        @Bean
-        @ConditionalOnMissingBean(RestClientFactory.class)
-        @ConditionalOnSingleCandidate(OAuth2AuthorizedClientManager.class)
-        public RestClientFactory restClientFactory(OAuth2AuthorizedClientManager authorizedClientManager) {
-            return new RestClientFactory(authorizedClientManager);
-        }
-
-    }
-
-    @Configuration
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
     static class ReactiveConfig {
 
