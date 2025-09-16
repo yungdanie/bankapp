@@ -7,6 +7,7 @@ import ru.practicum.common.Currency;
 import ru.practicum.common.dto.Exchange;
 import ru.practicum.common.dto.ExchangeRateDTO;
 import ru.practicum.common.dto.ExchangeRateUpdate;
+import ru.practicum.exchange.metrics.CurrencyMetrics;
 import ru.practicum.exchange.model.ExchangeRate;
 import ru.practicum.exchange.repository.ExchangeRateRepository;
 
@@ -23,6 +24,8 @@ public class RateService {
     private final ExchangeRateRepository exchangeRateRepository;
 
     private final String baseCurrencyCode;
+
+    private final CurrencyMetrics currencyMetrics;
 
     public BigDecimal exchange(Exchange exchange) {
         return getExchangeRate(exchange.fromCurrencyCode(), exchange.toCurrencyCode()).multiply(exchange.amount());
@@ -87,5 +90,7 @@ public class RateService {
         } else {
             exchangeRate.setRate(inputRate.rate());
         }
+
+        currencyMetrics.onCurrencyReceived();
     }
 }
