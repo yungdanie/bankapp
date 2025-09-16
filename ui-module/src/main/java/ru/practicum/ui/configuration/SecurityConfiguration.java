@@ -48,7 +48,7 @@ public class SecurityConfiguration {
                         exchanges -> exchanges
                                 .pathMatchers("/").permitAll()
                                 .pathMatchers("/signup").permitAll()
-                                .pathMatchers("/actuator/health/liveness", "/actuator/health/readiness").permitAll()
+                                .pathMatchers("/actuator/health/liveness", "/actuator/health/readiness", "/actuator/prometheus").permitAll()
                                 .pathMatchers("/logout").authenticated()
                                 .anyExchange().authenticated()
                 )
