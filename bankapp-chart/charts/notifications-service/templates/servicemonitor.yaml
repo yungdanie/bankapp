@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Chart.Name }}-monitor
+  labels:
+    release: {{ .Release.Name | quote }}   # ← имя релиза вместо "bankapp"
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+{{ include "notifications-service.selectorLabels" . | indent 6 }}
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 15s
+      scheme: http
+      relabelings:
+        - targetLabel: environment
+          replacement: {{ .Values.global.environmentTag }}
