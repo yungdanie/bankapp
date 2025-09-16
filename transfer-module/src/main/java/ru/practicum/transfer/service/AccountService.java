@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import ru.practicum.common.dto.BalanceTransfer;
+import ru.practicum.transfer.metrics.TransferMetrics;
 
 import java.util.List;
 
@@ -13,8 +14,11 @@ public class AccountService {
 
     private final WebClient accountsAPI;
 
-    public AccountService(@Qualifier("accountsAPI") WebClient accountsAPI) {
+    private final TransferMetrics transferMetrics;
+
+    public AccountService(@Qualifier("accountsAPI") WebClient accountsAPI, TransferMetrics transferMetrics) {
         this.accountsAPI = accountsAPI;
+        this.transferMetrics = transferMetrics;
     }
 
     public Mono<Void> transfer(List<BalanceTransfer> transfers) {
@@ -22,6 +26,8 @@ public class AccountService {
                 .bodyValue(transfers)
                 .retrieve()
                 .toBodilessEntity()
+                .doOnSuccess(any -> transferMetrics.onTransferAttempt(transfers, true))
+                .doOnSuccess(any -> transferMetrics.onTransferAttempt(transfers, false))
                 .then();
     }
 }
