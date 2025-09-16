@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-business
+  labels:
+    grafana_dashboard: "1"
+  annotations:
+    grafana_folder: "Business"
+data:
+  business-metrics.json: |-
+    {
+      "title": "Business Metrics",
+      "uid": "business-metrics",
+      "timezone": "",
+      "schemaVersion": 39,
+      "version": 1,
+      "refresh": "30s",
+      "time": { "from": "now-24h", "to": "now" },
+      "templating": {
+        "list": [
+          {
+            "name": "environment",
+            "label": "Environment",
+            "query": "{{ .Values.global.environmentTag }}",
+            "type": "constant",
+            "current": { "text": "{{ .Values.global.environmentTag }}", "value": "{{ .Values.global.environmentTag }}" }
+          }
+        ]
+      },
+      "panels": [
+        {
+          "type": "timeseries",
+          "title": "Login attempts RPS",
+          "id": 1,
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] },
+          "targets": [
+            {
+              "expr": "sum by (result) (rate(auth_login_attempts_total{environment=\"$environment\"}[5m]))",
+              "legendFormat": "{{result}}",
+              "refId": "A"
+            }
+          ],
+          "options": { "legend": { "displayMode": "table", "placement": "right" } }
+        },
+        {
+          "type": "stat",
+          "title": "Login failure rate (%)",
+          "id": 2,
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "yellow", "value": 5 },
+                  { "color": "red", "value": 20 }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "targets": [
+            {
+              "expr": "100 * sum(rate(auth_login_attempts_total{result=\"fail\",environment=\"$environment\"}[5m])) / clamp_min(sum(rate(auth_login_attempts_total{environment=\"$environment\"}[5m])), 1e-9)",
+              "refId": "A"
+            }
+          ],
+          "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } }
+        },
+        {
+          "type": "timeseries",
+          "title": "Failed transfers by kind (RPS)",
+          "id": 3,
+          "datasource": "Prometheus",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+          "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] },
+          "targets": [
+            {
+              "expr": "sum by (kind) (rate(transfer_attempts_total{result=\"fail\",environment=\"$environment\"}[5m]))",
+              "legendFormat": "{{kind}}",
+              "refId": "A"
+            }
+          ],
+          "options": { "legend": { "displayMode": "table", "placement": "right" } }
+        }
+      ]
+    }

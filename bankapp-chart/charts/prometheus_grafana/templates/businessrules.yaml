@@ -1,0 +1,53 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: business-rules
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+  - name: business.rules
+    rules:
+    - alert: HighLoginFailures
+      expr: |
+        sum(rate(auth_login_attempts_total{result="fail"}[5m]))
+        /
+        sum(rate(auth_login_attempts_total[5m])) > 0.2
+      for: 10m
+      labels: { severity: "warning", environment: {{ .Values.global.environmentTag }} }
+      annotations:
+        summary: "Высокая доля неуспешных логинов"
+    - alert: FxRatesStale
+      expr: (time() - max(fx_rates_last_update_seconds)) > 3600
+      for: 15m
+      labels: { severity: "critical", environment: {{ .Values.global.environmentTag }} }
+      annotations:
+        summary: "Курсы валют не обновлялись > 1 часа"
+    - alert: HighTransferFailures
+      expr: |
+        sum(rate(transfer_attempts_total{result="fail"}[5m]))
+        /
+        sum(rate(transfer_attempts_total[5m])) > 0.2
+      for: 10m
+      labels: { severity: "warning", environment: {{ .Values.global.environmentTag }} }
+      annotations:
+        summary: "Высокая доля неуспешных переводов"
+    - alert: HighNtfSentFailure
+      expr: |
+        sum(rate(notifications_send_failure_total{result="fail"}[5m]))
+        /
+        sum(rate(notifications_send_failure_total[5m])) > 0.2
+      for: 10m
+      labels: { severity: "warning", environment: {{ .Values.global.environmentTag }} }
+      annotations:
+        summary: "Высокая доля неотправленных NTF"
+    - alert: HighBlockedRequestCount
+      expr: |
+        sum(rate(request_blocked_total{result="fail"}[5m]))
+        /
+        sum(rate(request_blocked_total[5m])) > 0.2
+      for: 10m
+      labels: { severity: "warning", environment: {{ .Values.global.environmentTag }} }
+      annotations:
+        summary: "Высокая доля заблокированных запросов"
