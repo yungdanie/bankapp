@@ -1,6 +1,7 @@
 package ru.practicum.exchange.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.common.Currency;
@@ -19,6 +20,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Transactional
+@Slf4j
 public class RateService {
 
     private final ExchangeRateRepository exchangeRateRepository;
@@ -91,6 +93,7 @@ public class RateService {
             exchangeRate.setRate(inputRate.rate());
         }
 
+        log.info("Received new currency rate: {}", inputRate);
         currencyMetrics.onCurrencyReceived();
     }
 }

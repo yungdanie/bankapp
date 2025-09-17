@@ -2,6 +2,7 @@ package ru.practicum.accounts.service;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.practicum.accounts.mapper.UserMapper;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -103,6 +105,8 @@ public class UserService {
 
     @Transactional
     public TokenResponse signup(SignupForm form) throws UserValidateException {
+        log.debug("Enter to signup, login: {}", form.login());
+
         validate(form);
 
         var user = userMapper.toUser(form);
@@ -143,18 +147,22 @@ public class UserService {
                 || form.password() == null
                 || form.name() == null
                 || form.confirmPassword() == null) {
+            log.warn("User must pass enter all data to login: {}", form.login());
             throw new UserValidateException("Все поля формы обязательны для заполнения");
         }
 
         if (!form.password().equals(form.confirmPassword())) {
+            log.warn("User password must be equals to confirmPassword login: {}", form.login());
             throw new UserValidateException("Пароли не совпадают");
         }
 
         if (userRepository.findByLogin(form.login()) != null) {
+            log.warn("User login must by uniq login: {}", form.login());
             throw new UserValidateException("Такой логин уже существует в системе");
         }
 
         if (form.birthdate().plusYears(18).isAfter(LocalDate.now())) {
+            log.warn("User age must be > 18y, login: {}", form.login());
             throw new UserValidateException("Пользователю должно быть больше 18 лет");
         }
     }

@@ -1,6 +1,7 @@
 package ru.practicum.ui.service;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Service
 @CircuitBreaker(name = "external-service-circuit-breaker", fallbackMethod = "fallbackMethod")
+@Slf4j
 public class AccountService {
 
     private final WebClient accountsAPI;
@@ -40,6 +42,8 @@ public class AccountService {
     }
 
     public Mono<Void> editAccounts(List<AccountDTO> accounts) {
+        log.debug("Starting editing accounts: {}", accounts);
+
         return ReactiveSecurityContextHolder.getContext()
                 .map(context -> context.getAuthentication().getName())
                 .flatMap(login -> accountsAPI.post()
@@ -48,10 +52,14 @@ public class AccountService {
                         .retrieve()
                         .toBodilessEntity()
                         .then()
-                );
+                )
+                .doOnError(throwable -> log.error("Error while editing accounts: {}, error: {}", accounts, throwable))
+                .doOnSuccess(any -> log.info("Success editing accounts: {}", accounts));
     }
 
     public Mono<Void> deposit(CashActionDTO cashActionDTO) {
+        log.debug("Start deposit: {}", cashActionDTO);
+
         return ReactiveSecurityContextHolder.getContext()
                 .map(context -> context.getAuthentication().getName())
                 .flatMap(login -> cashAPI.post()
@@ -60,7 +68,9 @@ public class AccountService {
                         .retrieve()
                         .toBodilessEntity()
                         .then()
-                );
+                )
+                .doOnError(throwable -> log.error("Error while deposit: {}, error: {}", cashActionDTO, throwable))
+                .doOnSuccess(any -> log.info("Success deposit: {}", cashActionDTO));
     }
 
     public Mono<Void> innerTransfer(String toCurrencyCode, String fromCurrencyCode, BigDecimal amount) {
@@ -70,6 +80,8 @@ public class AccountService {
     }
 
     public Mono<Void> transfer(String toLogin, String toCurrencyCode, String fromCurrencyCode, BigDecimal amount) {
+        log.debug("Start transfer toLogin: {}, toCurrencyCode: {}, fromCurrencyCode: {}, amount: {}", toLogin, toCurrencyCode, fromCurrencyCode, amount);
+
         return ReactiveSecurityContextHolder.getContext()
                 .map(context -> context.getAuthentication().getName())
                 .flatMap(login -> transferAPI.post()
@@ -86,10 +98,29 @@ public class AccountService {
                         .retrieve()
                         .toBodilessEntity()
                 )
-                .then();
+                .then()
+                .doOnError(throwable ->
+                        log.error(
+                                "Error while transfer toLogin: {}, toCurrencyCode: {}, fromCurrencyCode: {}, amount: {}",
+                                toLogin,
+                                toCurrencyCode,
+                                fromCurrencyCode,
+                                amount
+                        )
+                )
+                .doOnSuccess(any ->
+                        log.info(
+                                "Success transfer toLogin: {}, toCurrencyCode: {}, fromCurrencyCode: {}, amount: {}",
+                                toLogin,
+                                toCurrencyCode,
+                                fromCurrencyCode,
+                                amount)
+                );
     }
 
     public Mono<Void> withdraw(CashActionDTO cashActionDTO) {
+        log.debug("Start withdraw: {}", cashActionDTO);
+
         return ReactiveSecurityContextHolder.getContext()
                 .map(context -> context.getAuthentication().getName())
                 .flatMap(login -> cashAPI.post()
@@ -98,6 +129,8 @@ public class AccountService {
                         .retrieve()
                         .toBodilessEntity()
                 )
-                .then();
+                .then()
+                .doOnError(throwable -> log.error("Error while withdraw: {}, error: {}", cashActionDTO, throwable))
+                .doOnSuccess(any -> log.info("Success withdraw: {}", cashActionDTO));
     }
 }
