@@ -2,9 +2,8 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: business-rules
-  namespace: monitoring
   labels:
-    release: kube-prometheus-stack
+    release: {{ .Release.Name }}
 spec:
   groups:
   - name: business.rules
