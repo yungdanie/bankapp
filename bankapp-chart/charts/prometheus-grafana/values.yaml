@@ -30,14 +30,15 @@ kube-prometheus-stack:
       size: 1Gi
 
     dashboards:
-      springboot:
-        gnetId: 19004
-        revision: 1
-        datasource: Prometheus
-      jvm_micrometer:
-        gnetId: 4701
-        revision: 9
-        datasource: Prometheus
+      default:
+        springboot:
+          gnetId: 19004
+          revision: 1
+          datasource: Prometheus
+        jvm_micrometer:
+          gnetId: 4701
+          revision: 9
+          datasource: Prometheus
 
     defaultDashboardsEnabled: true
 
