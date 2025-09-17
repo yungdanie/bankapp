@@ -38,7 +38,7 @@ data:
           "targets": [
             {
               "expr": "sum by (result) (rate(auth_login_attempts_total{environment=\"$environment\"}[5m]))",
-              "legendFormat": "{{result}}",
+              "legendFormat": "{{"{{"}}result{{"}}"}}",
               "refId": "A"
             }
           ],
@@ -82,7 +82,7 @@ data:
           "targets": [
             {
               "expr": "sum by (kind) (rate(transfer_attempts_total{result=\"fail\",environment=\"$environment\"}[5m]))",
-              "legendFormat": "{{kind}}",
+              "legendFormat": "{{"{{"}}kind{{"}}"}}",
               "refId": "A"
             }
           ],
