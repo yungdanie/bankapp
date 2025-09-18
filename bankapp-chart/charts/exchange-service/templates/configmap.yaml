@@ -9,6 +9,8 @@ data:
   spring_jpa_hibernate_ddl-auto: "update"
   spring_jpa_properties_hibernate_dialect: "org.hibernate.dialect.PostgreSQLDialect"
 
+  spring_kafka_bootstrap-servers: {{ .Values.config.kafkaServers | quote }}
+
   spring_security_oauth2_resourceserver_jwt_issuer-uri: {{ .Values.config.oauth2.issuerUri | quote }}
   spring_security_oauth2_resourceserver_jwt_jwk-set-uri: {{ .Values.config.oauth2.jwtSetUri | quote }}
   logging_level_root: "INFO"

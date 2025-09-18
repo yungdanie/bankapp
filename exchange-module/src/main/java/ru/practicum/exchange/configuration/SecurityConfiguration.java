@@ -9,8 +9,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -27,11 +25,12 @@ public class SecurityConfiguration {
                             return config;
                         }))
                         .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/api/exchange/rates", "/actuator/health", "/actuator/ready").permitAll()
+                                .requestMatchers("/api/exchange/rates", "/actuator/health/liveness", "/actuator/health/readiness").permitAll()
                                 .anyRequest().authenticated())
                         .formLogin(AbstractHttpConfigurer::disable)
                         .logout(AbstractHttpConfigurer::disable)
                         .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                        .oauth2Login(AbstractHttpConfigurer::disable)
                         .build();
     }
 }

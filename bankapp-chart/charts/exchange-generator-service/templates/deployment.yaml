@@ -37,6 +37,16 @@ spec:
                 sleep 10
               done
               exit 1
+        - name: wait-for-kafka
+          image: edenhill/kcat:1.7.1
+          command: ['sh','-c']
+          args:
+            - |
+              for i in $(seq 1 120); do
+                if kcat -b bankapp-kafka:9092 -L >/dev/null 2>&1; then exit 0; fi
+                echo "Waiting for Kafka... attempt $i/60"; sleep 20
+              done
+              exit 1
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}

@@ -26,13 +26,14 @@ public class SecurityConfiguration {
         return
                 http.csrf(AbstractHttpConfigurer::disable)
                         .authorizeHttpRequests(
-                                auth -> auth.requestMatchers("/api/login", "/api/signup", "/actuator/health", "/actuator/ready")
+                                auth -> auth.requestMatchers("/api/login", "/api/signup", "/actuator/health/liveness", "/actuator/health/readiness")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated()
                         )
                         .formLogin(AbstractHttpConfigurer::disable)
                         .logout(AbstractHttpConfigurer::disable)
+                        .oauth2Login(AbstractHttpConfigurer::disable)
                         .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                         .build();
     }

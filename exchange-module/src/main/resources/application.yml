@@ -1,3 +1,10 @@
 spring:
   application:
     name: exchange
+  kafka:
+    bootstrap-servers: # указать адрес
+    streams:
+      application-id: ${spring.application}
+      properties:
+        default.key.serde: org.apache.kafka.common.serialization.Serdes$UUIDSerde
+        default.value.serde: org.springframework.kafka.support.serializer.JsonSerde
