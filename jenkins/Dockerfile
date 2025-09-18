@@ -32,7 +32,10 @@ RUN curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/sta
         rm -rf linux-amd64
 
 RUN helm repo add bitnami https://charts.bitnami.com/bitnami && \
+    helm repo add zipkin https://zipkin.io/zipkin-helm \
     helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx && \
+    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts \
+    helm repo add elastic https://helm.elastic.co \
     helm repo update
 
 # Установка плагинов Jenkins

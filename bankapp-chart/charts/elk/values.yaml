@@ -1,0 +1,127 @@
+elasticsearch:
+  clusterName: bankapp
+  nodeGroup: elasticsearch
+  replicas: 1
+  minimumMasterNodes: 1
+  esJavaOpts: "-Xms1g -Xmx1g"
+
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: elasticsearch.local
+        paths:
+          - path: /
+            pathType: Prefix
+
+
+  protocol: http
+  secret:
+    enabled: false
+  createCert: false
+  esConfig:
+    elasticsearch.yml: |
+      xpack.security.enabled: false
+
+  volumeClaimTemplate:
+    accessModes: ["ReadWriteOnce"]
+    resources:
+      requests:
+        storage: 1Gi
+  resources:
+    requests: { cpu: "500m", memory: "2Gi" }
+
+logstash:
+
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: logstash.local
+        paths:
+          - path: /
+            pathType: Prefix
+
+  replicas: 1
+  resources:
+    requests: { cpu: "200m", memory: "512Mi" }
+
+  logstashPipeline:
+    logstash.conf: |
+      input {
+        kafka {
+          bootstrap_servers => "${KAFKA_BOOTSTRAP:PLAINTEXT://kafka:9092}"
+          topics => ["${LOGS_TOPIC}"]
+          group_id => "${LOGS_GROUP:logstash-consumers}"
+          consumer_threads => 2
+          decorate_events => true
+        }
+      }
+      
+      filter {
+        grok {
+          match => {
+            "message" => "%{TIMESTAMP_ISO8601:ts} %{LOGLEVEL:level}\s+\[%{DATA:serviceName}\] \[%{DATA:traceId}:%{DATA:spanId}\] - %{GREEDYDATA:msg}"
+          }
+        }
+      
+        mutate {
+          gsub => [
+            "[message]", "(?i)(login|username|toLogin|pwd|password)[=: ]+([^ ]+)", "\1=***"
+          ]
+          add_field => { "env" => "${ENV}}" }
+        }
+      }
+      
+      output {
+        elasticsearch {
+          hosts => [ "${ES_HOSTS}" ]
+          index => "services-%{+YYYY.MM.dd}"
+          ilm_enabled => false
+          ssl => false
+        }
+      }
+
+  extraEnvs:
+    - name: ENV
+      valueFrom:
+        configMapKeyRef: { name: elk-env, key: ENV }
+    - name: LOGS_TOPIC
+      valueFrom:
+        configMapKeyRef: { name: elk-env, key: LOGS_TOPIC }
+    - name: KAFKA_BOOTSTRAP
+      valueFrom:
+        configMapKeyRef: { name: elk-env, key: KAFKA_BOOTSTRAP }
+    - name: ES_HOSTS
+      valueFrom:
+        configMapKeyRef: { name: elk-env, key: ES_HOSTS }
+
+kibana:
+  replicas: 1
+
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: kibana.local
+        paths:
+          - path: /
+            pathType: Prefix
+
+  elasticsearchHosts:
+
+  resources:
+    requests: { cpu: "200m", memory: "512Mi" }
+  extraVolumes:
+    - name: extra-kibana-config
+      configMap:
+        name: extra-kibana-config
+  extraVolumeMounts:
+    - name: extra-kibana-config
+      mountPath: /usr/share/kibana/config/kibana.yml
+      subPath: kibana.yml
+
+kibanaconfig: |
+  server.publicBaseUrl: "http://bankapp-kibana.local"
+  elasticsearch.hosts:
+    - "http://{{ .Values.global.esHost }}"

@@ -1,0 +1,56 @@
+kube-prometheus-stack:
+  prometheus:
+    prometheusSpec:
+      scrapeInterval: 30s
+      evaluationInterval: 30s
+      scrapeTimeout: 10s
+      resources:
+        requests: { cpu: "200m", memory: "1Gi" }
+  alertmanager:
+    alertmanagerSpec:
+      storage:
+        volumeClaimTemplate:
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 1Gi
+  grafana:
+    enabled: true
+    adminPassword: "mega_secured"
+
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hosts: [ "grafana.local" ]
+
+    persistence:
+      enabled: true
+      type: pvc
+      size: 1Gi
+
+    dashboards:
+      default:
+        springboot:
+          gnetId: 19004
+          revision: 1
+          datasource: Prometheus
+        jvm_micrometer:
+          gnetId: 4701
+          revision: 9
+          datasource: Prometheus
+
+    defaultDashboardsEnabled: true
+
+    sidecar:
+      dashboards:
+        enabled: true
+        label: grafana_dashboard
+        labelValue: "1"
+        searchNamespace: ALL
+        folderAnnotation: grafana_folder
+        provider:
+          foldersFromFilesStructure: true
+
+    plugins:
+      - grafana-piechart-panel

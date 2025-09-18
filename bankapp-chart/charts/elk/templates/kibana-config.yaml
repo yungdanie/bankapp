@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: extra-kibana-config
+data:
+  kibana.yml: |
+{{ tpl .Values.kibanaconfig . | indent 4 }}

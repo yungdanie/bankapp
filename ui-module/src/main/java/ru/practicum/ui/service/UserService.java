@@ -1,6 +1,7 @@
 package ru.practicum.ui.service;
 
 import io.github.resilience4j.retry.annotation.Retry;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +18,7 @@ import java.security.Principal;
 import java.util.List;
 
 @Service
+@Slf4j
 public class UserService {
 
     private final WebClient accountsAPI;
@@ -29,6 +31,8 @@ public class UserService {
 
     @Retry(name = "signup-retry")
     public Mono<Void> signup(SignupForm form, ServerWebExchange exchange) {
+        log.debug("enter signup form: {}", form);
+
         return accountsAPI
                 .post()
                 .uri("/signup")
@@ -38,10 +42,14 @@ public class UserService {
                 .bodyToMono(TokenResponse.class)
                 .map(tokenResponse -> new UsernamePasswordAuthenticationToken(tokenResponse.login(), tokenResponse.token()))
                 .doOnNext(auth -> AuthUtil.setAuthenticationCookie(exchange, auth))
+                .doOnSuccess(any -> log.info("Auth success, login: {}", any.getName()))
+                .doOnError(throwable -> log.error("Auth error", throwable))
                 .then();
     }
 
     public Mono<Void> editPassword(ChangePasswordForm changePasswordForm) {
+        log.debug("enter edit password form: {}", changePasswordForm.login());
+
         return ReactiveSecurityContextHolder.getContext()
                 .map(SecurityContext::getAuthentication)
                 .map(Principal::getName)
@@ -59,18 +67,24 @@ public class UserService {
                                 .retrieve()
                                 .toBodilessEntity()
                                 .then()
-                );
+                )
+                .doOnSuccess(any -> log.info("Edit password success, login: {}", changePasswordForm.login()))
+                .doOnError(throwable -> log.error("Edit password error, login: {}, throwable: {}", changePasswordForm.login(), throwable));
     }
 
     @Retry(name = "login-retry")
     public Mono<TokenResponse> login(String login, String rawPassword) {
+        log.debug("enter login: {}", login);
+
         return accountsAPI
                 .post()
                 .uri("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new LoginForm(login, rawPassword))
                 .retrieve()
-                .bodyToMono(TokenResponse.class);
+                .bodyToMono(TokenResponse.class)
+                .doOnSuccess(any -> log.info("login success, login: {}", login))
+                .doOnError(throwable -> log.error("login error, login: {}, throwable: {}", login, throwable));
     }
 
     @Retry(name = "current-user-retry")

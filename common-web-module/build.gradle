@@ -11,6 +11,7 @@ dependencies {
     compileOnly "org.springframework.boot:spring-boot-starter-webflux"
     compileOnly 'org.springframework.boot:spring-boot-starter-oauth2-client'
     compileOnly "org.springframework.boot:spring-boot-autoconfigure"
+    compileOnly 'io.micrometer:micrometer-core'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
     api project(':common-module')

@@ -1,5 +1,6 @@
 package ru.practicum.exchangegenerator.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.practicum.common.Currency;
@@ -13,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class ExchangeGeneratorService {
 
     private final String baseCurrencyCode;
@@ -31,6 +33,8 @@ public class ExchangeGeneratorService {
     }
 
     public void generateNewRates() {
+        log.debug("Generate new rates");
+
         Set<ExchangeRateUpdate> exchangeRates = Arrays.stream(Currency.values())
                 .filter(currency -> !currency.getCode().equals(baseCurrencyCode))
                 .map(currency ->
@@ -41,10 +45,13 @@ public class ExchangeGeneratorService {
                         )
                 ).collect(Collectors.toSet());
 
+        log.debug("Generated new rates: {}", exchangeRates);
+
         sendNewExchangeRates(exchangeRates);
     }
 
     private void sendNewExchangeRates(Set<ExchangeRateUpdate> exchangeRates) {
+        log.info("Send new exchangeRates");
         exchangeRates.forEach(rate -> kafkaTemplate.send(KafkaTopic.EXCHANGES.name(), rate.toCurrencyCode(), rate));
     }
 }

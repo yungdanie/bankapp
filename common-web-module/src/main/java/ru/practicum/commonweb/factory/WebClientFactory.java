@@ -14,6 +14,8 @@ public class WebClientFactory {
 
     private final ReactiveOAuth2AuthorizedClientManager reactiveOAuth2AuthorizedClientManager;
 
+    private final WebClient.Builder webClientBuilder;
+
     public WebClient getOAuth2WebClient(
             String serviceURL,
             String clientRegistrationID
@@ -29,7 +31,7 @@ public class WebClientFactory {
                 }
         );
 
-        return WebClient.builder()
+        return webClientBuilder
                 .filter((request, next) ->
                         reactiveOAuth2AuthorizedClientManager.authorize(
                                         OAuth2AuthorizeRequest

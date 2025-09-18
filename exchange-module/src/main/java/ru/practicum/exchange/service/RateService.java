@@ -1,12 +1,14 @@
 package ru.practicum.exchange.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.common.Currency;
 import ru.practicum.common.dto.Exchange;
 import ru.practicum.common.dto.ExchangeRateDTO;
 import ru.practicum.common.dto.ExchangeRateUpdate;
+import ru.practicum.exchange.metrics.CurrencyMetrics;
 import ru.practicum.exchange.model.ExchangeRate;
 import ru.practicum.exchange.repository.ExchangeRateRepository;
 
@@ -18,11 +20,14 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Transactional
+@Slf4j
 public class RateService {
 
     private final ExchangeRateRepository exchangeRateRepository;
 
     private final String baseCurrencyCode;
+
+    private final CurrencyMetrics currencyMetrics;
 
     public BigDecimal exchange(Exchange exchange) {
         return getExchangeRate(exchange.fromCurrencyCode(), exchange.toCurrencyCode()).multiply(exchange.amount());
@@ -87,5 +92,8 @@ public class RateService {
         } else {
             exchangeRate.setRate(inputRate.rate());
         }
+
+        log.info("Received new currency rate: {}", inputRate);
+        currencyMetrics.onCurrencyReceived();
     }
 }

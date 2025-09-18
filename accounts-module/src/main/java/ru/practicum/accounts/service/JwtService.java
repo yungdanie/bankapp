@@ -1,6 +1,7 @@
 package ru.practicum.accounts.service;
 
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.Date;
 import java.util.Set;
 
 @Service
+@Slf4j
 public class JwtService {
 
     @Value("${jwt.expiration}")
@@ -30,6 +32,7 @@ public class JwtService {
     }
 
     private String generateToken(String login, Collection<String> roles) {
+        log.debug("Generating token for user: {}", login);
         var now = Instant.now();
         return Jwts.builder()
                 .subject(login)

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" packages="org.apache.logging.log4j.core">
+    <Properties>
+        <Property name="serviceName">${env:SPRING_APPLICATION_NAME:-unknown-service}</Property>
+        <Property name="environment">${env:ENVIRONMENT:-dev}</Property>
+        <Property name="kafkaBootstrap">${env:KAFKA_BOOTSTRAP_SERVERS:-localhost:9092}</Property>
+        <Property name="kafkaTopic">${env:LOGS_TOPIC:-service-logs}</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{ISO8601} %-5level [${serviceName}] [%X{traceId}:%X{spanId}] - %msg%n"/>
+        </Console>
+
+        <Kafka name="Kafka" topic="${kafkaTopic}">
+            <PatternLayout pattern="%d{ISO8601} %-5level [${serviceName}] [%X{traceId}:%X{spanId}] - %msg%n"/>
+            <Property name="bootstrap.servers">${kafkaBootstrap}</Property>
+            <Property name="acks">1</Property>
+            <Property name="linger.ms">50</Property>
+        </Kafka>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="Kafka"/>
+        </Root>
+
+        <Logger name="org.apache.kafka" level="INFO" >
+            <AppenderRef ref="Console"/>
+        </Logger>
+    </Loggers>
+</Configuration>

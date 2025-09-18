@@ -14,6 +14,10 @@ global:
     periodSeconds: 10
   commonMapRefName: "bankapp-configmap"
   commonSecretRefName: "bankapp-secret"
+  esHost: "bankapp-elasticsearch:9200"
+  environmentTag: "default"
+  logsTopic: "service-logs"
+  kafkaServers: "bankapp-kafka:9092"
 
 common:
   config:
@@ -27,6 +31,9 @@ common:
     healthShowDetails: "always"
     circuitBreakersEnabled: "true"
     rateLimitersEnabled: "true"
+    zipkin:
+      endpoint: "http://bankapp-zipkin:9411/api/v2/spans"
+      samplingProbability: 1
   secret:
     jwtSecret: "aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789+ab="
     jwtExpiration: "300m"
@@ -55,7 +62,6 @@ accounts-service:
           - path: /
             pathType: Prefix
   config:
-    kafkaServers: "bankapp-kafka:9092"
     databaseURL: "jdbc:postgresql://bankapp-accounts-db:5432/accounts"
     databaseUsername: "accounts_user"
     databaseDriver: org.postgresql.Driver
@@ -105,7 +111,6 @@ exchange-service:
     databaseUsername: "exchange_user"
     databaseDriver: org.postgresql.Driver
     databasePassword: "password"
-    kafkaServers: "bankapp-kafka:9092"
     oauth2:
       issuerUri: http://bankapp-keycloak:8089/realms/bankapp
       jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
@@ -195,7 +200,6 @@ exchange-generator-service:
           - path: /
             pathType: Prefix
   config:
-    kafkaServers: "bankapp-kafka:9092"
     oauth2:
       issuerUri: http://bankapp-keycloak:8089/realms/bankapp
       jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
@@ -257,7 +261,6 @@ notifications-service:
           - path: /
             pathType: Prefix
   config:
-    kafkaServers: "bankapp-kafka:9092"
     oauth2:
       issuerUri: http://bankapp-keycloak:8089/realms/bankapp
       jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
@@ -396,3 +399,11 @@ kafka:
     persistence:
       enabled: true
       size: 1Gi
+
+zipkin:
+  service:
+    type: ClusterIP
+    port: 9411
+  ingress:
+    enabled: true
+    host: zipkin.local

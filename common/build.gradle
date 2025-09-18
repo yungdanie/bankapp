@@ -29,6 +29,25 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // zipkin
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+    implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+
+    // prometheus
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    // slf4j
+    implementation "org.springframework.boot:spring-boot-starter-log4j2"
+    modules {
+        module("org.springframework.boot:spring-boot-starter-logging") {
+            replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
+        }
+    }
+    implementation project(":logging-config")
 }
 
 tasks.named('test') {
