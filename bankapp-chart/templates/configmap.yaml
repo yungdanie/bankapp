@@ -15,3 +15,6 @@ data:
   management_health_ratelimiters_enabled: {{ .Values.common.config.rateLimitersEnabled | quote }}
   management_zipkin_tracing_endpoint: {{ .Values.common.config.zipkin.endpoint | quote }}
   management_zipkin_sampling_probability: {{ .Values.common.config.zipkin.samplingProbability | quote }}
+  environment: {{ .Values.global.environmentTag | quote }}
+  logs_topic: {{ .Values.global.logsTopic | quote }}
+  kafkaServers: {{ .Values.global.kafkaServers | quote }}

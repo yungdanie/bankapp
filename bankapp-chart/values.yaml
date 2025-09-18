@@ -15,6 +15,8 @@ global:
   commonMapRefName: "bankapp-configmap"
   commonSecretRefName: "bankapp-secret"
   environmentTag: "default"
+  logsTopic: "service-logs"
+  kafkaServers: "bankapp-kafka:9092"
 
 common:
   config:
@@ -59,7 +61,6 @@ accounts-service:
           - path: /
             pathType: Prefix
   config:
-    kafkaServers: "bankapp-kafka:9092"
     databaseURL: "jdbc:postgresql://bankapp-accounts-db:5432/accounts"
     databaseUsername: "accounts_user"
     databaseDriver: org.postgresql.Driver
@@ -109,7 +110,6 @@ exchange-service:
     databaseUsername: "exchange_user"
     databaseDriver: org.postgresql.Driver
     databasePassword: "password"
-    kafkaServers: "bankapp-kafka:9092"
     oauth2:
       issuerUri: http://bankapp-keycloak:8089/realms/bankapp
       jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
@@ -199,7 +199,6 @@ exchange-generator-service:
           - path: /
             pathType: Prefix
   config:
-    kafkaServers: "bankapp-kafka:9092"
     oauth2:
       issuerUri: http://bankapp-keycloak:8089/realms/bankapp
       jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
@@ -261,7 +260,6 @@ notifications-service:
           - path: /
             pathType: Prefix
   config:
-    kafkaServers: "bankapp-kafka:9092"
     oauth2:
       issuerUri: http://bankapp-keycloak:8089/realms/bankapp
       jwtSetUri: http://bankapp-keycloak:8089/realms/bankapp/protocol/openid-connect/certs
